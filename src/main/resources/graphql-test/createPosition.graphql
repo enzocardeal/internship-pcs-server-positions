@@ -1,0 +1,8 @@
+mutation createPosition($input: CreatePositionInput){
+    createPosition(input: $input){
+        id
+        positionName
+        company
+        role
+    }
+}

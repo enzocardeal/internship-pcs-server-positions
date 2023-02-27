@@ -10,7 +10,7 @@
 	<groupId>com.poli</groupId>
 	<artifactId>internship</artifactId>
 	<version>0.0.3-SNAPSHOT</version>
-	<name>internship_4_0</name>
+	<name>internship_4_0_position</name>
 	<description>Microsservice positions for internship 4.0</description>
 	<properties>
 		<java.version>19</java.version>
@@ -60,7 +60,12 @@
 			<artifactId>graphql-java-extended-scalars</artifactId>
 			<version>20.0</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 
 	<build>
