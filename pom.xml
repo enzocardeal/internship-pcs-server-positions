@@ -55,6 +55,11 @@
 			<artifactId>postgres-socket-factory</artifactId>
 			<version>1.9.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>graphql-java-extended-scalars</artifactId>
+			<version>20.0</version>
+		</dependency>
 	</dependencies>
 
 
