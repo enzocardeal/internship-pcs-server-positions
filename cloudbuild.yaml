@@ -21,7 +21,7 @@ steps:
       [
         "run",
         "deploy",
-        "internship-pcs-server-positions",
+        "positions-internship-service",
         "--image",
         "gcr.io/$PROJECT_ID/$REPO_NAME:$BRANCH_NAME",
         "--region",
