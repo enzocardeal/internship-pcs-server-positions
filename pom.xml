@@ -10,8 +10,8 @@
 	<groupId>com.poli</groupId>
 	<artifactId>internship</artifactId>
 	<version>0.0.3-SNAPSHOT</version>
-	<name>internship_4_0</name>
-	<description>Demo project for Spring Boot</description>
+	<name>internship_4_0_position</name>
+	<description>Microservice positions for internship 4.0</description>
 	<properties>
 		<java.version>19</java.version>
 		<org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
@@ -55,7 +55,17 @@
 			<artifactId>postgres-socket-factory</artifactId>
 			<version>1.9.0</version>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>graphql-java-extended-scalars</artifactId>
+			<version>20.0</version>
+		</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 
 	<build>

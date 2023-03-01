@@ -1,7 +1,9 @@
 type Query {
     getUser(input: GetUserInput): User
+    getPositionById(input: GetPositionByIdInput): Position
 }
 
 type Mutation {
     createUser(input: CreateUserInput): User
+    createPosition(input: CreatePositionInput): Position
 }

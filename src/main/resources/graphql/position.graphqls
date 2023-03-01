@@ -1,0 +1,20 @@
+scalar Date
+
+type Position {
+    id: ID!
+    positionName: String!
+    company: String!
+    role: String!
+}
+
+input GetPositionByIdInput {
+    id: String!
+}
+
+input CreatePositionInput {
+    positionName: String!
+    company: String!
+    role: String!
+    startsAt: Date!
+    endsAt: Date!
+}
