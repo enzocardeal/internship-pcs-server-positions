@@ -1,6 +1,6 @@
 # internship-pcs-server-positions
 
-Microsservice for positions of the project _Internship 4.0_ from Poli-USP.
+Microservice for positions of the project _Internship 4.0_ from Poli-USP.
 
 ## Run Application
 

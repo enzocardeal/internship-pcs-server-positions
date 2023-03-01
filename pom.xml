@@ -11,7 +11,7 @@
 	<artifactId>internship</artifactId>
 	<version>0.0.3-SNAPSHOT</version>
 	<name>internship_4_0_position</name>
-	<description>Microsservice positions for internship 4.0</description>
+	<description>Microservice positions for internship 4.0</description>
 	<properties>
 		<java.version>19</java.version>
 		<org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
