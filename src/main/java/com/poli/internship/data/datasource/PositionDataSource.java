@@ -19,6 +19,14 @@ public class PositionDataSource {
         return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);
     }
 
+    public Boolean deletePosition(String id){
+        if(repository.existsById(Long.parseLong(id))){
+            repository.deleteById(Long.parseLong(id));
+            return true;
+        }
+        return false;
+    }
+
     public PositionModel createPosition(String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt){
         PositionEntity positionEntity = repository.save(new PositionEntity(positionName, company, role, startsAt, endsAt));
         return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureGraphQlTester
@@ -73,5 +74,21 @@ public class PositionTest {
         assertThat(position.getId()).isEqualTo(id);
         assertThat(position.getPositionName()).isEqualTo(positionEntity.getPositionName());
         assertThat(position).hasOnlyFields("id", "company", "positionName", "role");
+    }
+
+    @Test
+    public void deletePosition(){
+        PositionEntity positionEntity = this.repository.save(new PositionEntity("Estágio Quadrimestral", "BTG Pactual", "Security Office Intern", LocalDate.of(2023, 5, 1), LocalDate.of(2023, 8, 30)));
+        String id = positionEntity.getId().toString();
+        Map<String, Object> input = new HashMap<String, Object>();
+        input.put("id", id);
+
+        Boolean deleted = this.tester.documentName("deletePosition")
+                .variable("input", input)
+                .execute()
+                .path("deletePosition")
+                .entity(Boolean.class)
+                .get();
+        assertTrue(deleted);
     }
 }

@@ -4,4 +4,5 @@ type Query {
 
 type Mutation {
     createPosition(input: CreatePositionInput): Position
+    deletePosition(input: GetPositionByIdInput): Boolean
 }
