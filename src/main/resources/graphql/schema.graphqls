@@ -1,5 +1,6 @@
 type Query {
     getPositionById(input: GetPositionByIdInput): Position
+    getAllPositions: [Position]
 }
 
 type Mutation {

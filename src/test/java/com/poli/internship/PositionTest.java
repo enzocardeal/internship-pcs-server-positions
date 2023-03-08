@@ -12,7 +12,9 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,6 +76,41 @@ public class PositionTest {
         assertThat(position.getId()).isEqualTo(id);
         assertThat(position.getPositionName()).isEqualTo(positionEntity.getPositionName());
         assertThat(position).hasOnlyFields("id", "company", "positionName", "role");
+    }
+
+    @Test
+    public void getAllPositions(){
+        List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
+        positionEntities.add(repository.save(new PositionEntity(
+                "Estágio Quadrimestral",
+                "BTG Pactual",
+                "Security Office Intern",
+                LocalDate.of(2023, 5, 1),
+                LocalDate.of(2023, 8, 30
+                ))));
+        positionEntities.add(repository.save(new PositionEntity(
+                "Estágio Quadrimestral",
+                "BTG Pactual",
+                "Security Office Intern",
+                LocalDate.of(2023, 5, 1),
+                LocalDate.of(2023, 8, 30
+                ))));
+        positionEntities.add(repository.save(new PositionEntity(
+                "Estágio Quadrimestral",
+                "BTG Pactual",
+                "Security Office Intern",
+                LocalDate.of(2023, 5, 1),
+                LocalDate.of(2023, 8, 30
+                ))));
+
+        List<HashMap> positions = this.tester.documentName("getAllPositions")
+                .execute()
+                .path("getAllPositions")
+                .entity(List.class)
+                .get();
+
+        assertThat(positions.size()).isEqualTo(3);
+        assertThat(positions.get(0).get("positionName")).isEqualTo(positionEntities.get(0).getPositionName());
     }
 
     @Test

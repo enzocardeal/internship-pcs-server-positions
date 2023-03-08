@@ -1,0 +1,8 @@
+query getAllPositions {
+    getAllPositions {
+        id
+        company
+        positionName
+        role
+    }
+}

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class PositionDataSource {
@@ -17,6 +18,11 @@ public class PositionDataSource {
     public PositionModel getPositionById(String id) {
         PositionEntity positionEntity = repository.findById(Long.parseLong(id));
         return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);
+    }
+
+    public List<PositionModel> getAllPositions(){
+        Iterable<PositionEntity> positionEntities = repository.findAll();
+        return PositionMapper.INSTANCE.positionEntitiesToModels(positionEntities);
     }
 
     public Boolean deletePosition(String id){

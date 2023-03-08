@@ -3,6 +3,7 @@ package com.poli.internship.api.controller;
 import com.poli.internship.domain.models.PositionModel;
 import com.poli.internship.domain.usecase.CreatePositionUseCase;
 import com.poli.internship.domain.usecase.DeletePositionUseCase;
+import com.poli.internship.domain.usecase.GetAllPositions;
 import com.poli.internship.domain.usecase.GetPositionByIdUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -11,6 +12,8 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -22,10 +25,19 @@ public class PositionController {
     @Autowired
     public DeletePositionUseCase deletePositionUseCase;
 
+    @Autowired
+    public GetAllPositions getAllPositions;
+
     @QueryMapping
     public PositionModel getPositionById(@Argument Map input){
         Map data = (Map)input.get("input");
         return this.getPositionByIdUseCase.exec((String) data.get("id"));
+    }
+
+    @QueryMapping
+    public List<PositionModel> getAllPositions(){
+        List<PositionModel> a = this.getAllPositions.exec();
+        return this.getAllPositions.exec();
     }
 
     @MutationMapping
