@@ -1,9 +1,6 @@
 package com.poli.internship.api.controller;
 
-import com.poli.internship.domain.usecase.CreatePositionUseCase;
-import com.poli.internship.domain.usecase.DeletePositionUseCase;
-import com.poli.internship.domain.usecase.GetAllPositions;
-import com.poli.internship.domain.usecase.GetPositionByIdUseCase;
+import com.poli.internship.domain.usecase.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -29,6 +26,9 @@ public class PositionController {
     @Autowired
     public GetAllPositions getAllPositions;
 
+    @Autowired
+    public UpdatePositionUseCase updatePositionUseCase;
+
     @QueryMapping
     public Position getPositionById(@Argument Map input){
         Map data = (Map)input.get("input");
@@ -50,6 +50,22 @@ public class PositionController {
                         (String)data.get("role"),
                         (LocalDate)data.get("startsAt"),
                         (LocalDate)data.get("endsAt"))
+        );
+    }
+
+    @MutationMapping
+    public Position updatePosition(@Argument Map input){
+        Map data = (Map)input.get("input");
+        Position positionToBeUpdated = this.getPositionByIdUseCase.exec((String)data.get("id"));
+        return this.updatePositionUseCase.exec(
+                new PositionInput(
+                        data.get("positionName") != null ? (String)data.get("positionName") : positionToBeUpdated.positionName(),
+                        data.get("company") != null ? (String)data.get("company") : positionToBeUpdated.company(),
+                        data.get("role") != null ? (String)data.get("role") : positionToBeUpdated.role(),
+                        data.get("startsAt") != null ? (LocalDate)data.get("startsAt") : positionToBeUpdated.startsAt(),
+                        data.get("endsAt") != null ? (LocalDate)data.get("endsAt") : positionToBeUpdated.endsAt()
+                ),
+                (String)data.get("id")
         );
     }
 

@@ -4,5 +4,7 @@ query getPositionByID($input: GetPositionByIdInput!) {
         company
         positionName
         role
+        startsAt
+        endsAt
     }
 }

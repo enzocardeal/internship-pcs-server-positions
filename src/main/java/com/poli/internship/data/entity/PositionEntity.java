@@ -29,6 +29,15 @@ public class PositionEntity {
         this.endsAt = endsAt;
     }
 
+    public PositionEntity(Long id, String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt) {
+        this.id = id;
+        this.positionName = positionName;
+        this.company = company;
+        this.role = role;
+        this.startsAt = startsAt;
+        this.endsAt = endsAt;
+    }
+
     public Long getId() {
         return id;
     }

@@ -47,4 +47,17 @@ public class PositionDataSource {
         );
         return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);
     }
+
+    public Position updatePosition(PositionInput positionInput, Long id){
+        PositionEntity positionEntity = repository.save(
+                new PositionEntity(
+                        id,
+                        positionInput.positionName(),
+                        positionInput.company(),
+                        positionInput.role(),
+                        positionInput.startsAt(),positionInput.endsAt()
+                )
+        );
+        return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);
+    }
 }

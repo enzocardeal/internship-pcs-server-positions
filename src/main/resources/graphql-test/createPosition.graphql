@@ -4,5 +4,7 @@ mutation createPosition($input: CreatePositionInput){
         positionName
         company
         role
+        startsAt
+        endsAt
     }
 }
