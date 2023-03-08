@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.poli.internship.domain.models.PositionModel.PositionInput;
+import static com.poli.internship.domain.models.PositionModel.Position;
 
 import java.util.List;
 
@@ -17,12 +18,12 @@ public class PositionDataSource {
     @Autowired
     public PositionRepository repository;
 
-    public PositionModel getPositionById(String id) {
+    public Position getPositionById(String id) {
         PositionEntity positionEntity = repository.findById(Long.parseLong(id));
         return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);
     }
 
-    public List<PositionModel> getAllPositions(){
+    public List<Position> getAllPositions(){
         Iterable<PositionEntity> positionEntities = repository.findAll();
         return PositionMapper.INSTANCE.positionEntitiesToModels(positionEntities);
     }
@@ -35,7 +36,7 @@ public class PositionDataSource {
         return false;
     }
 
-    public PositionModel createPosition(PositionInput positionInput){
+    public Position createPosition(PositionInput positionInput){
         PositionEntity positionEntity = repository.save(
                 new PositionEntity(
                         positionInput.positionName(),

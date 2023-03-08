@@ -2,7 +2,6 @@ package com.poli.internship;
 
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.repository.PositionRepository;
-import com.poli.internship.domain.models.PositionModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.poli.internship.domain.models.PositionModel.Position;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,18 +45,18 @@ public class PositionTest {
         input.put("startsAt", LocalDate.of(2023, 5, 1));
         input.put("endsAt", LocalDate.of(2023, 8, 30));
 
-        PositionModel position = this.tester.documentName("createPosition")
+        Position position = this.tester.documentName("createPosition")
                 .variable("input", input)
                 .execute()
                 .path("createPosition")
-                .entity(PositionModel.class)
+                .entity(Position.class)
                 .get();
         PositionEntity positionEntity = this.repository.findAll().iterator().next();
 
-        assertThat(position.getId()).isNotNull();
-        assertThat(position.getCompany()).isEqualTo(input.get("company"));
+        assertThat(position.id()).isNotNull();
+        assertThat(position.company()).isEqualTo(input.get("company"));
         assertThat(position).hasOnlyFields("id", "company", "positionName", "role");
-        assertThat(positionEntity.getId()).isEqualTo(Long.parseLong(position.getId()));
+        assertThat(positionEntity.getId()).isEqualTo(Long.parseLong(position.id()));
         assertThat(positionEntity.getPositionName()).isEqualTo(input.get("positionName"));
     }
 
@@ -66,15 +67,15 @@ public class PositionTest {
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("id", id);
 
-        PositionModel position = this.tester.documentName("getPositionById")
+        Position position = this.tester.documentName("getPositionById")
                 .variable("input", input)
                 .execute()
                 .path("getPositionById")
-                .entity(PositionModel.class)
+                .entity(Position.class)
                 .get();
 
-        assertThat(position.getId()).isEqualTo(id);
-        assertThat(position.getPositionName()).isEqualTo(positionEntity.getPositionName());
+        assertThat(position.id()).isEqualTo(id);
+        assertThat(position.positionName()).isEqualTo(positionEntity.getPositionName());
         assertThat(position).hasOnlyFields("id", "company", "positionName", "role");
     }
 

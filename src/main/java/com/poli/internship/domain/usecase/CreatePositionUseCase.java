@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.poli.internship.domain.models.PositionModel.PositionInput;
+import static com.poli.internship.domain.models.PositionModel.Position;
 
-import java.time.LocalDate;
 
 @Service
 public class CreatePositionUseCase {
     @Autowired
     private PositionDataSource dataSource;
 
-    public PositionModel exec(PositionInput positionInput){
+    public Position exec(PositionInput positionInput){
         return this.dataSource.createPosition(positionInput);
     }
 }
