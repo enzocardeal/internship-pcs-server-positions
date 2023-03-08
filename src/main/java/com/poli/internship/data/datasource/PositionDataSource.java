@@ -7,8 +7,10 @@ import com.poli.internship.domain.models.PositionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import static com.poli.internship.domain.models.PositionModel.PositionInput;
+
 import java.util.List;
+
 
 @Service
 public class PositionDataSource {
@@ -33,8 +35,15 @@ public class PositionDataSource {
         return false;
     }
 
-    public PositionModel createPosition(String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt){
-        PositionEntity positionEntity = repository.save(new PositionEntity(positionName, company, role, startsAt, endsAt));
+    public PositionModel createPosition(PositionInput positionInput){
+        PositionEntity positionEntity = repository.save(
+                new PositionEntity(
+                        positionInput.positionName(),
+                        positionInput.company(),
+                        positionInput.role(),
+                        positionInput.startsAt(),positionInput.endsAt()
+                )
+        );
         return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);
     }
 }

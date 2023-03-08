@@ -11,8 +11,9 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import static com.poli.internship.domain.models.PositionModel.PositionInput;
+
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,14 @@ public class PositionController {
     @MutationMapping
     public PositionModel createPosition(@Argument Map input){
         Map data = (Map)input.get("input");
-        return this.createPositionUseCase.exec((String)data.get("positionName"), (String)data.get("company"), (String)data.get("role"), (LocalDate)data.get("startsAt"), (LocalDate)data.get("endsAt"));
+        return this.createPositionUseCase.exec(
+                new PositionInput(
+                        (String)data.get("positionName"),
+                        (String)data.get("company"),
+                        (String)data.get("role"),
+                        (LocalDate)data.get("startsAt"),
+                        (LocalDate)data.get("endsAt"))
+        );
     }
 
     @MutationMapping
