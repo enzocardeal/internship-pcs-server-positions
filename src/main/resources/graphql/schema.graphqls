@@ -1,10 +1,11 @@
 type Query {
-    getPositionById(input: GetPositionByIdInput): Position
+    getPositionById(input: GetPositionByIdInput!): Position
     getAllPositions: [Position]
+    getAllPositionsByIds(input: GetAllPositionsByIdsInput!): [Position]
 }
 
 type Mutation {
-    createPosition(input: CreatePositionInput): Position
-    updatePosition(input: UpdatePositionInput): Position
-    deletePosition(input: GetPositionByIdInput): Boolean
+    createPosition(input: CreatePositionInput!): Position
+    updatePosition(input: UpdatePositionInput!): Position
+    deletePosition(input: GetPositionByIdInput!): Boolean
 }

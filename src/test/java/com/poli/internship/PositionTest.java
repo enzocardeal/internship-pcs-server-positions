@@ -60,7 +60,15 @@ public class PositionTest {
 
     @Test
     public void getPositionById(){
-        PositionEntity positionEntity = this.repository.save(new PositionEntity("Estágio Quadrimestral", "BTG Pactual", "Security Office Intern", LocalDate.of(2023, 5, 1), LocalDate.of(2023, 8, 30)));
+        PositionEntity positionEntity = this.repository.save(
+                new PositionEntity(
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
         String id = positionEntity.getId().toString();
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("id", id);
@@ -75,6 +83,65 @@ public class PositionTest {
         assertThat(position.id()).isEqualTo(id);
         assertThat(position.positionName()).isEqualTo(positionEntity.getPositionName());
         assertThat(position).hasOnlyFields("id", "company", "positionName", "role", "startsAt", "endsAt");
+    }
+
+    @Test
+    public void getAllPositionsByIds(){
+        List<PositionEntity> positionEntitiesToBeSaved = new ArrayList<PositionEntity>();
+        positionEntitiesToBeSaved.add(
+                new PositionEntity(
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+        positionEntitiesToBeSaved.add(
+                new PositionEntity(
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+        positionEntitiesToBeSaved.add(
+                new PositionEntity(
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+
+        List<PositionEntity> positionEntities = (List<PositionEntity>) this.repository.saveAll(positionEntitiesToBeSaved);
+        List<String> ids = new ArrayList<String>();
+
+        for(PositionEntity positionEntity : positionEntities){
+            ids.add(Long.toString(positionEntity.getId()));
+        }
+
+        Map<String, Object> input = new HashMap<String, Object>();
+        input.put("ids", ids);
+
+        List<HashMap> positions= this.tester.documentName("getAllPositionsByIds")
+                .variable("input", input)
+                .execute()
+                .path("getAllPositionsByIds")
+                .entity(List.class)
+                .get();
+
+        assertThat(positions.size()).isEqualTo(3);
+
+        assertThat(positions.get(0).get("id")).isEqualTo(ids.get(0));
+        assertThat(positions.get(1).get("id")).isEqualTo(ids.get(1));
+        assertThat(positions.get(2).get("id")).isEqualTo(ids.get(2));
+
+        assertThat(positions.get(0).get("positionName")).isEqualTo(positionEntities.get(0).getPositionName());
+        assertThat(positions.get(1).get("positionName")).isEqualTo(positionEntities.get(1).getPositionName());
+        assertThat(positions.get(2).get("positionName")).isEqualTo(positionEntities.get(2).getPositionName());
     }
 
     @Test

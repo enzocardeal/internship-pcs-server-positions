@@ -13,6 +13,10 @@ input GetPositionByIdInput {
     id: String!
 }
 
+input GetAllPositionsByIdsInput {
+    ids: [String!]!
+}
+
 input CreatePositionInput {
     positionName: String!
     company: String!

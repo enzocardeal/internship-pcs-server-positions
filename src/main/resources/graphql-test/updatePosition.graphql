@@ -1,4 +1,4 @@
-mutation updatePosition($input: UpdatePositionInput){
+mutation updatePosition($input: UpdatePositionInput!){
     updatePosition(input: $input){
         id
         positionName

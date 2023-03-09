@@ -3,13 +3,13 @@ package com.poli.internship.data.datasource;
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.mapper.PositionMapper;
 import com.poli.internship.data.repository.PositionRepository;
-import com.poli.internship.domain.models.PositionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.poli.internship.domain.models.PositionModel.PositionInput;
 import static com.poli.internship.domain.models.PositionModel.Position;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,7 +24,16 @@ public class PositionDataSource {
     }
 
     public List<Position> getAllPositions(){
-        Iterable<PositionEntity> positionEntities = repository.findAll();
+        List<PositionEntity> positionEntities = repository.findAll();
+        return PositionMapper.INSTANCE.positionEntitiesToModels(positionEntities);
+    }
+
+    public List<Position> getAllPositionsByIds(List<String> ids){
+        List<Long> idsAsLong = new ArrayList<Long>();
+        for(String id: ids){
+            idsAsLong.add(Long.parseLong(id));
+        }
+        List<PositionEntity> positionEntities = repository.findAllById(idsAsLong);
         return PositionMapper.INSTANCE.positionEntitiesToModels(positionEntities);
     }
 

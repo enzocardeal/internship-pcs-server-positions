@@ -9,7 +9,7 @@ import static com.poli.internship.domain.models.PositionModel.Position;
 import java.util.List;
 
 @Service
-public class GetAllPositions {
+public class GetAllPositionsUseCase {
     @Autowired
     private PositionDataSource dataSource;
 

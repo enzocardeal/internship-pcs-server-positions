@@ -24,7 +24,10 @@ public class PositionController {
     public DeletePositionUseCase deletePositionUseCase;
 
     @Autowired
-    public GetAllPositions getAllPositions;
+    public GetAllPositionsUseCase getAllPositionsUseCase;
+
+    @Autowired
+    public GetAllPositionsByIdsUseCase getAllPositionsByIdsUseCase;
 
     @Autowired
     public UpdatePositionUseCase updatePositionUseCase;
@@ -36,8 +39,14 @@ public class PositionController {
     }
 
     @QueryMapping
+    public List<Position> getAllPositionsByIds(@Argument Map input){
+        Map data = (Map)input.get("input");
+        return this.getAllPositionsByIdsUseCase.exec((List<String>) data.get("ids"));
+    }
+
+    @QueryMapping
     public List<Position> getAllPositions(){
-        return this.getAllPositions.exec();
+        return this.getAllPositionsUseCase.exec();
     }
 
     @MutationMapping
