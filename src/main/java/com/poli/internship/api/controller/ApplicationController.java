@@ -14,6 +14,8 @@ import static com.poli.internship.domain.models.ApplicationModel.Application;
 public class ApplicationController {
     @Autowired
     public CreateApplicationUseCase createApplicationUseCase;
+    @Autowired
+    public DeleteApplicationUseCase deleteApplicationUseCase;
 
     @MutationMapping
     public Application createApplication(@Argument Map input) {
@@ -22,5 +24,12 @@ public class ApplicationController {
                 (String)data.get("positionId"),
                 (String)data.get("curriculumId")
         );
+    }
+
+    @MutationMapping
+    public Boolean deleteApplication(@Argument Map input){
+        Map data = (Map) input.get("input");
+
+        return this.deleteApplicationUseCase.exec( (String) data.get("id"));
     }
 }

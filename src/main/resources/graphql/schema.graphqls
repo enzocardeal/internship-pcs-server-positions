@@ -10,4 +10,5 @@ type Mutation {
     deletePosition(input: GetPositionByIdInput!): Boolean
 
     createApplication(input: CreateApplicationInput!): Application
+    deleteApplication(input: DeleteApplicationInput!): Boolean
 }

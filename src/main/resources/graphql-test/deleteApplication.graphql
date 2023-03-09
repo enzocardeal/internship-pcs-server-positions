@@ -1,0 +1,3 @@
+mutation deleteApplication($input: DeleteApplicationInput!){
+    deleteApplication(input: $input)
+}

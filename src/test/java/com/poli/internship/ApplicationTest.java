@@ -1,5 +1,7 @@
 package com.poli.internship;
 
+import com.poli.internship.data.datasource.ApplicationDataSource;
+import com.poli.internship.data.entity.ApplicationEntity;
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.repository.ApplicationRepository;
 import com.poli.internship.data.repository.PositionRepository;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 import static com.poli.internship.domain.models.ApplicationModel.Application;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureGraphQlTester
@@ -30,6 +33,9 @@ public class ApplicationTest {
 
     @Autowired
     private PositionRepository positionRepository;
+
+    @Autowired
+    private ApplicationDataSource applicationDataSource;
 
     @AfterEach
     public void afterEach(){
@@ -65,5 +71,25 @@ public class ApplicationTest {
         assertThat(application.position()).isNotNull();
         assertThat(application.curriculumId()).isNotNull();
         assertThat(application.position().positionName()).isEqualTo(positionEntity.getPositionName());
+    }
+
+    @Test
+    public void deleteApplication(){
+        PositionEntity positionEntity = this.positionRepository.save(new PositionEntity("Estágio Quadrimestral", "BTG Pactual", "Security Office Intern", LocalDate.of(2023, 5, 1), LocalDate.of(2023, 8, 30)));
+        String positionId = positionEntity.getId().toString();
+
+        Application application = this.applicationDataSource.createApplication(positionId, "2");
+
+        Map<String, Object> input = new HashMap<String, Object>();
+        input.put("id", application.id());
+
+        Boolean deleted = this.tester.documentName("deleteApplication")
+                .variable("input", input)
+                .execute()
+                .path("deleteApplication")
+                .entity(Boolean.class)
+                .get();
+
+        assertTrue(deleted);
     }
 }

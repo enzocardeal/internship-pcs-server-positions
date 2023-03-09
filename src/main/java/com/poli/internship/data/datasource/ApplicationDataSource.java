@@ -28,4 +28,12 @@ public class ApplicationDataSource {
         }
         return null;
     }
+
+    public Boolean deleteApplication(String id){
+        if(applicationRepository.existsById(Long.parseLong(id))){
+            applicationRepository.deleteById(Long.parseLong(id));
+            return true;
+        }
+        return false;
+    }
 }

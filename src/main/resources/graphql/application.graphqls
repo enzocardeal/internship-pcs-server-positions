@@ -8,3 +8,7 @@ input CreateApplicationInput {
     positionId: String!
     curriculumId: String!
 }
+
+input DeleteApplicationInput {
+    id: ID!
+}
