@@ -1,0 +1,14 @@
+query getApplicationById($input: GetApplicationById!) {
+    getApplicationById(input: $input) {
+        id
+        curriculumId
+        position{
+            id
+            positionName
+            role
+            company
+            startsAt
+            endsAt
+        }
+    }
+}

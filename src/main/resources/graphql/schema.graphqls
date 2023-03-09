@@ -2,6 +2,9 @@ type Query {
     getPositionById(input: GetPositionByIdInput!): Position
     getAllPositions: [Position]
     getAllPositionsByIds(input: GetAllPositionsByIdsInput!): [Position]
+
+    getApplicationById(input: GetApplicationById!): Application
+    getAllApplicationsByCurriculumId(input: GetAllApplicationsByCurriculumId!): [Application]
 }
 
 type Mutation {

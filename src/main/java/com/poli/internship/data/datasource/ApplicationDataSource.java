@@ -5,9 +5,10 @@ import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.mapper.ApplicationMapper;
 import com.poli.internship.data.repository.ApplicationRepository;
 import com.poli.internship.data.repository.PositionRepository;
-import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.poli.internship.domain.models.ApplicationModel.Application;
 
@@ -35,5 +36,15 @@ public class ApplicationDataSource {
             return true;
         }
         return false;
+    }
+
+    public Application getApplicationById(String id){
+        ApplicationEntity applicationEntity = applicationRepository.findById(Long.parseLong(id));
+        return ApplicationMapper.INSTANCE.aplicationEntityToModel(applicationEntity);
+    }
+
+    public List<Application> getAllApplicationsByCurriculumId(String curriculumId){
+        List<ApplicationEntity> applicationEntities = applicationRepository.findByCurriculumId(Long.parseLong(curriculumId));
+        return ApplicationMapper.INSTANCE.applicationEntitiesToModels(applicationEntities);
     }
 }

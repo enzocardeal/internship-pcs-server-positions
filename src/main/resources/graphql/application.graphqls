@@ -12,3 +12,11 @@ input CreateApplicationInput {
 input DeleteApplicationInput {
     id: ID!
 }
+
+input GetApplicationById {
+    id: ID!
+}
+
+input GetAllApplicationsByCurriculumId {
+    curriculumId: ID!
+}

@@ -4,8 +4,10 @@ import com.poli.internship.domain.usecase.application.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.poli.internship.domain.models.ApplicationModel.Application;
@@ -16,6 +18,21 @@ public class ApplicationController {
     public CreateApplicationUseCase createApplicationUseCase;
     @Autowired
     public DeleteApplicationUseCase deleteApplicationUseCase;
+    @Autowired
+    public GetApplicationByIdUseCase getApplicationByIdUseCase;
+    public GetAllApplicationsByCurriculumIdUseCase getAllApplicationsByCurriculumIdUseCase;
+
+    @QueryMapping
+    public Application getApplicationById(@Argument Map input) {
+        Map data = (Map) input.get("input");
+        return this.getApplicationByIdUseCase.exec((String) data.get("id"));
+    }
+
+    @QueryMapping
+    public List<Application> getApplicationsByCurriculumId(@Argument Map input) {
+        Map data = (Map) input.get("input");
+        return this.getAllApplicationsByCurriculumIdUseCase.exec((String) data.get("curriculumId"));
+    }
 
     @MutationMapping
     public Application createApplication(@Argument Map input) {
