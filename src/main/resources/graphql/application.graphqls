@@ -1,0 +1,10 @@
+type Application {
+    id: ID!
+    position: Position!
+    curriculumId: ID!
+}
+
+input CreateApplicationInput {
+    positionId: String!
+    curriculumId: String!
+}

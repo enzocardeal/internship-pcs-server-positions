@@ -1,4 +1,4 @@
-package com.poli.internship.domain.usecase;
+package com.poli.internship.domain.usecase.position;
 
 import com.poli.internship.data.datasource.PositionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;

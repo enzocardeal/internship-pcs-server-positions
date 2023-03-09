@@ -1,0 +1,14 @@
+mutation createApplication($input: CreateApplicationInput!){
+    createApplication(input: $input){
+        id
+        position{
+            id
+            positionName
+            role
+            company
+            startsAt
+            endsAt
+        }
+        curriculumId
+    }
+}

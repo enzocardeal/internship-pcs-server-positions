@@ -8,4 +8,6 @@ type Mutation {
     createPosition(input: CreatePositionInput!): Position
     updatePosition(input: UpdatePositionInput!): Position
     deletePosition(input: GetPositionByIdInput!): Boolean
+
+    createApplication(input: CreateApplicationInput!): Application
 }

@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 
 import java.time.LocalDate;
 
-@Entity
+@Entity(name = "position")
 public class PositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
