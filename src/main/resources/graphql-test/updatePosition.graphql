@@ -1,0 +1,10 @@
+mutation updatePosition($input: UpdatePositionInput){
+    updatePosition(input: $input){
+        id
+        positionName
+        company
+        role
+        startsAt
+        endsAt
+    }
+}

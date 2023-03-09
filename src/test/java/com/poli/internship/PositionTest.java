@@ -2,8 +2,7 @@ package com.poli.internship;
 
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.repository.PositionRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +19,7 @@ import static com.poli.internship.domain.models.PositionModel.Position;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @SpringBootTest
 @AutoConfigureGraphQlTester
@@ -31,10 +31,8 @@ public class PositionTest {
     @Autowired
     private PositionRepository repository;
 
-    @BeforeEach
-    public void beforeEach(){
-        this.repository.deleteAll();
-    }
+    @AfterEach
+    public void afterEach(){ this.repository.deleteAll();}
 
     @Test
     public void createPosition(){
@@ -55,7 +53,7 @@ public class PositionTest {
 
         assertThat(position.id()).isNotNull();
         assertThat(position.company()).isEqualTo(input.get("company"));
-        assertThat(position).hasOnlyFields("id", "company", "positionName", "role");
+        assertThat(position).hasOnlyFields("id", "company", "positionName", "role", "startsAt", "endsAt");
         assertThat(positionEntity.getId()).isEqualTo(Long.parseLong(position.id()));
         assertThat(positionEntity.getPositionName()).isEqualTo(input.get("positionName"));
     }
@@ -76,27 +74,27 @@ public class PositionTest {
 
         assertThat(position.id()).isEqualTo(id);
         assertThat(position.positionName()).isEqualTo(positionEntity.getPositionName());
-        assertThat(position).hasOnlyFields("id", "company", "positionName", "role");
+        assertThat(position).hasOnlyFields("id", "company", "positionName", "role", "startsAt", "endsAt");
     }
 
     @Test
     public void getAllPositions(){
         List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
-        positionEntities.add(repository.save(new PositionEntity(
+        positionEntities.add(this.repository.save(new PositionEntity(
                 "Estágio Quadrimestral",
                 "BTG Pactual",
                 "Security Office Intern",
                 LocalDate.of(2023, 5, 1),
                 LocalDate.of(2023, 8, 30
                 ))));
-        positionEntities.add(repository.save(new PositionEntity(
+        positionEntities.add(this.repository.save(new PositionEntity(
                 "Estágio Quadrimestral",
                 "BTG Pactual",
                 "Security Office Intern",
                 LocalDate.of(2023, 5, 1),
                 LocalDate.of(2023, 8, 30
                 ))));
-        positionEntities.add(repository.save(new PositionEntity(
+        positionEntities.add(this.repository.save(new PositionEntity(
                 "Estágio Quadrimestral",
                 "BTG Pactual",
                 "Security Office Intern",
@@ -128,5 +126,38 @@ public class PositionTest {
                 .entity(Boolean.class)
                 .get();
         assertTrue(deleted);
+    }
+
+    @Test
+    public void updatePosition(){
+        PositionEntity positionEntity = this.repository.save(new PositionEntity(
+                "Estágio Quadrimestral",
+                "BTG Pactual",
+                "Security Office Intern",
+                LocalDate.of(2023, 5, 1),
+                LocalDate.of(2023, 8, 30)
+            )
+        );
+        String id = positionEntity.getId().toString();
+
+        Map<String, Object> input = new HashMap<String, Object>();
+        input.put("id", id);
+        input.put("positionName", "Estágio Semestral");
+
+        Position position = this.tester.documentName("updatePosition")
+                .variable("input", input)
+                .execute()
+                .path("updatePosition")
+                .entity(Position.class)
+                .get();
+
+        assertThat(position.id()).isNotNull();
+        assertThat(positionEntity.getId()).isEqualTo(Long.parseLong(position.id()));
+        assertThat(position.company()).isEqualTo(positionEntity.getCompany());
+        assertThat(position.role()).isEqualTo(positionEntity.getRole());
+        assertThat(input.get("positionName")).isEqualTo("Estágio Semestral");
+        assertThat(position.startsAt()).isEqualTo(positionEntity.getStartsAt());
+        assertThat(position.endsAt()).isEqualTo(positionEntity.getEndsAt());
+        assertThat(position).hasOnlyFields("id", "company", "positionName", "role", "startsAt", "endsAt");
     }
 }
