@@ -33,7 +33,7 @@ services:
       - 5432
     networks:
       - app-network
-    profiles: ["default", "test"]
+    profiles: ["test"]
   app:
     container_name: app
     depends_on:

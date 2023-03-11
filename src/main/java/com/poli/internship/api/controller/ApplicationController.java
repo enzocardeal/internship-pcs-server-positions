@@ -19,8 +19,9 @@ public class ApplicationController {
     @Autowired
     public DeleteApplicationUseCase deleteApplicationUseCase;
     @Autowired
-    public GetApplicationByIdUseCase getApplicationByIdUseCase;
     public GetAllApplicationsByCurriculumIdUseCase getAllApplicationsByCurriculumIdUseCase;
+    @Autowired
+    public GetApplicationByIdUseCase getApplicationByIdUseCase;
 
     @QueryMapping
     public Application getApplicationById(@Argument Map input) {
@@ -29,7 +30,7 @@ public class ApplicationController {
     }
 
     @QueryMapping
-    public List<Application> getApplicationsByCurriculumId(@Argument Map input) {
+    public List<Application> getAllApplicationsByCurriculumId(@Argument Map input) {
         Map data = (Map) input.get("input");
         return this.getAllApplicationsByCurriculumIdUseCase.exec((String) data.get("curriculumId"));
     }
