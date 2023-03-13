@@ -2,10 +2,16 @@ type Query {
     getPositionById(input: GetPositionByIdInput!): Position
     getAllPositions: [Position]
     getAllPositionsByIds(input: GetAllPositionsByIdsInput!): [Position]
+
+    getApplicationById(input: GetApplicationById!): Application
+    getAllApplicationsByCurriculumId(input: GetAllApplicationsByCurriculumId!): [Application]
 }
 
 type Mutation {
     createPosition(input: CreatePositionInput!): Position
     updatePosition(input: UpdatePositionInput!): Position
     deletePosition(input: GetPositionByIdInput!): Boolean
+
+    createApplication(input: CreateApplicationInput!): Application
+    deleteApplication(input: DeleteApplicationInput!): Boolean
 }

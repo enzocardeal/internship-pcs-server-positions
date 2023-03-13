@@ -1,6 +1,6 @@
 package com.poli.internship.api.controller;
 
-import com.poli.internship.domain.usecase.*;
+import com.poli.internship.domain.usecase.position.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;

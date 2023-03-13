@@ -19,7 +19,6 @@ import static com.poli.internship.domain.models.PositionModel.Position;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @SpringBootTest
 @AutoConfigureGraphQlTester
@@ -127,6 +126,13 @@ public class PositionTest {
         input.put("ids", ids);
 
         List<HashMap> positions= this.tester.documentName("getAllPositionsByIds")
+                .variable("input", input)
+                .execute()
+                .path("getAllPositionsByIds")
+                .entity(List.class)
+                .get();
+
+        this.tester.documentName("getAllPositionsByIds")
                 .variable("input", input)
                 .execute()
                 .path("getAllPositionsByIds")

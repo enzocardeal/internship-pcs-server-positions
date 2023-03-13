@@ -1,0 +1,14 @@
+query getAllApplicationsByCurriculumId($input: GetAllApplicationsByCurriculumId!) {
+    getAllApplicationsByCurriculumId(input: $input) {
+        id
+        curriculumId
+        position{
+            id
+            positionName
+            role
+            company
+            startsAt
+            endsAt
+        }
+    }
+}
