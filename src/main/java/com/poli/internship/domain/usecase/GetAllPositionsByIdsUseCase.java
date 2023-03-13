@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 
 import static com.poli.internship.domain.models.PositionModel.Position;
 
+import java.util.List;
+
 @Service
-public class GetPositionByIdUseCase {
+public class GetAllPositionsByIdsUseCase {
     @Autowired
     private PositionDataSource dataSource;
 
-    public Position exec(String id){
-        return this.dataSource.getPositionById(id);
+    public List<Position> exec(List<String> ids){
+        return this.dataSource.getAllPositionsByIds(ids);
     }
 }

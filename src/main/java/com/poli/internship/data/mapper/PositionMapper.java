@@ -5,9 +5,14 @@ import com.poli.internship.domain.models.PositionModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import static com.poli.internship.domain.models.PositionModel.Position;
+
+import java.util.List;
+
 @Mapper
 public interface PositionMapper {
     PositionMapper INSTANCE = Mappers.getMapper(PositionMapper.class);
 
-    PositionModel positionEntityToModel(PositionEntity entity);
+    Position positionEntityToModel(PositionEntity entity);
+    List<Position> positionEntitiesToModels(Iterable<PositionEntity> entities);
 }

@@ -1,0 +1,3 @@
+mutation deletePosition($input: GetPositionByIdInput!){
+    deletePosition(input: $input)
+}

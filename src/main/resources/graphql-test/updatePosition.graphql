@@ -1,5 +1,5 @@
-mutation createPosition($input: CreatePositionInput!){
-    createPosition(input: $input){
+mutation updatePosition($input: UpdatePositionInput!){
+    updatePosition(input: $input){
         id
         positionName
         company

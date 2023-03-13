@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface PositionRepository extends CrudRepository<PositionEntity, Long> {
     PositionEntity findById(long id);
-//    List<PositionEntity> findByCompanyName(String companyName);
+    List<PositionEntity> findAll();
+    List<PositionEntity> findAllById(Iterable<Long> ids);
 }

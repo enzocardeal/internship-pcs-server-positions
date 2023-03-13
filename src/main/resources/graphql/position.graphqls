@@ -5,10 +5,16 @@ type Position {
     positionName: String!
     company: String!
     role: String!
+    startsAt: Date!
+    endsAt: Date!
 }
 
 input GetPositionByIdInput {
     id: String!
+}
+
+input GetAllPositionsByIdsInput {
+    ids: [String!]!
 }
 
 input CreatePositionInput {
@@ -17,4 +23,13 @@ input CreatePositionInput {
     role: String!
     startsAt: Date!
     endsAt: Date!
+}
+
+input UpdatePositionInput {
+    id: ID!
+    positionName: String!
+    company: String
+    role: String
+    startsAt: Date
+    endsAt: Date
 }

@@ -1,0 +1,10 @@
+query getAllPositionsByIds($input: GetAllPositionsByIdsInput!){
+    getAllPositionsByIds(input: $input){
+        id
+        positionName
+        company
+        role
+        startsAt
+        endsAt
+    }
+}

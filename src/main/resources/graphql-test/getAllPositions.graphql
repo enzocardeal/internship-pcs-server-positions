@@ -1,5 +1,5 @@
-query getPositionByID($input: GetPositionByIdInput!) {
-    getPositionById(input: $input) {
+query getAllPositions {
+    getAllPositions {
         id
         company
         positionName

@@ -1,9 +1,11 @@
 type Query {
-    getUser(input: GetUserInput): User
-    getPositionById(input: GetPositionByIdInput): Position
+    getPositionById(input: GetPositionByIdInput!): Position
+    getAllPositions: [Position]
+    getAllPositionsByIds(input: GetAllPositionsByIdsInput!): [Position]
 }
 
 type Mutation {
-    createUser(input: CreateUserInput): User
-    createPosition(input: CreatePositionInput): Position
+    createPosition(input: CreatePositionInput!): Position
+    updatePosition(input: UpdatePositionInput!): Position
+    deletePosition(input: GetPositionByIdInput!): Boolean
 }

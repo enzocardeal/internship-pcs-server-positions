@@ -1,17 +1,16 @@
 package com.poli.internship.domain.usecase;
 
 import com.poli.internship.data.datasource.PositionDataSource;
+import com.poli.internship.domain.models.PositionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.poli.internship.domain.models.PositionModel.Position;
-
 @Service
-public class GetPositionByIdUseCase {
+public class DeletePositionUseCase {
     @Autowired
     private PositionDataSource dataSource;
 
-    public Position exec(String id){
-        return this.dataSource.getPositionById(id);
+    public Boolean exec(String id) {
+        return this.dataSource.deletePosition(id);
     }
 }
