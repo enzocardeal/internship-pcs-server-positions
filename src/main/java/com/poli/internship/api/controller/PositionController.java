@@ -1,6 +1,8 @@
 package com.poli.internship.api.controller;
 
+import com.poli.internship.api.auth.GraphQLAuthorization;
 import com.poli.internship.domain.usecase.position.*;
+import graphql.GraphQLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -50,10 +52,13 @@ public class PositionController {
     }
 
     @MutationMapping
-    public Position createPosition(@Argument Map input){
+    public Position createPosition(@Argument Map input, GraphQLContext ctx){
+        GraphQLAuthorization.checkAuthorization(ctx);
+
         Map data = (Map)input.get("input");
         return this.createPositionUseCase.exec(
                 new PositionInput(
+                        (String)ctx.get("userId"),
                         (String)data.get("positionName"),
                         (String)data.get("company"),
                         (String)data.get("role"),
@@ -63,11 +68,14 @@ public class PositionController {
     }
 
     @MutationMapping
-    public Position updatePosition(@Argument Map input){
+    public Position updatePosition(@Argument Map input, GraphQLContext ctx){
+        GraphQLAuthorization.checkAuthorization(ctx);
+
         Map data = (Map)input.get("input");
         Position positionToBeUpdated = this.getPositionByIdUseCase.exec((String)data.get("id"));
         return this.updatePositionUseCase.exec(
                 new PositionInput(
+                        (String) ctx.get("userId"),
                         data.get("positionName") != null ? (String)data.get("positionName") : positionToBeUpdated.positionName(),
                         data.get("company") != null ? (String)data.get("company") : positionToBeUpdated.company(),
                         data.get("role") != null ? (String)data.get("role") : positionToBeUpdated.role(),
@@ -79,7 +87,9 @@ public class PositionController {
     }
 
     @MutationMapping
-    public Boolean deletePosition(@Argument Map input){
+    public Boolean deletePosition(@Argument Map input, GraphQLContext ctx){
+        GraphQLAuthorization.checkAuthorization(ctx);
+
         Map data = (Map)input.get("input");
         return this.deletePositionUseCase.exec((String)data.get("id"));
     }

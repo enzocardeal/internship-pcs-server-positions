@@ -1,6 +1,7 @@
 mutation updatePosition($input: UpdatePositionInput!){
     updatePosition(input: $input){
         id
+        userId
         positionName
         company
         role

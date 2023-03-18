@@ -44,6 +44,7 @@ public class ApplicationTest {
     private AuthTokenPayload tokenPayload;
     private String authToken;
     private String userId = "123";
+    private String companyUserId = "321";
 
     @BeforeEach
     public void beforeEach() {
@@ -64,6 +65,7 @@ public class ApplicationTest {
     public void createApplication(){
         PositionEntity positionEntity = this.positionRepository.save(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -91,7 +93,15 @@ public class ApplicationTest {
 
     @Test
     public void deleteApplication(){
-        PositionEntity positionEntity = this.positionRepository.save(new PositionEntity("Estágio Quadrimestral", "BTG Pactual", "Security Office Intern", LocalDate.of(2023, 5, 1), LocalDate.of(2023, 8, 30)));
+        PositionEntity positionEntity = this.positionRepository.save(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
         String positionId = positionEntity.getId().toString();
 
         Application application = this.applicationDataSource.createApplication(positionId, userId);
@@ -114,6 +124,7 @@ public class ApplicationTest {
         List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -123,6 +134,7 @@ public class ApplicationTest {
         );
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -132,6 +144,7 @@ public class ApplicationTest {
         );
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -171,6 +184,7 @@ public class ApplicationTest {
     public void getApplicationById(){
         PositionEntity positionEntity = this.positionRepository.save(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
