@@ -1,6 +1,7 @@
 mutation createApplication($input: CreateApplicationInput!){
     createApplication(input: $input){
         id
+        userId
         position{
             id
             positionName
@@ -9,6 +10,5 @@ mutation createApplication($input: CreateApplicationInput!){
             startsAt
             endsAt
         }
-        curriculumId
     }
 }

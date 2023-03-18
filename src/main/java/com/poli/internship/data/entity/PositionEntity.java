@@ -12,8 +12,6 @@ public class PositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-
     private String positionName;
     private String company;
     private String role;

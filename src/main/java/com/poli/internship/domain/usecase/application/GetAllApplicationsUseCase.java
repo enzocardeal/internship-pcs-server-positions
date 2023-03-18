@@ -9,11 +9,11 @@ import java.util.List;
 import static com.poli.internship.domain.models.ApplicationModel.Application;
 
 @Service
-public class GetAllApplicationsByCurriculumIdUseCase {
+public class GetAllApplicationsUseCase {
     @Autowired
     private ApplicationDataSource dataSource;
 
-    public List<Application> exec(String curriculumId){
-        return this.dataSource.getAllApplicationsByCurriculumId(curriculumId);
+    public List<Application> exec(String userId){
+        return this.dataSource.getAllApplicationsByUserId(userId);
     }
 }

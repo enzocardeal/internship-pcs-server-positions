@@ -11,7 +11,7 @@ public class CreateApplicationUseCase {
     @Autowired
     private ApplicationDataSource dataSource;
 
-    public Application exec(String positionId, String curriculumId) {
-        return this.dataSource.createApplication(positionId, curriculumId);
+    public Application exec(String positionId, String userId) {
+        return this.dataSource.createApplication(positionId, userId);
     }
 }

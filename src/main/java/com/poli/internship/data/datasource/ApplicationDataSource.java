@@ -19,11 +19,15 @@ public class ApplicationDataSource {
     @Autowired
     public PositionRepository positionRepository;
 
-    public Application createApplication(String positionId, String curriculumId){
-        if(positionRepository.existsById(Long.parseLong(positionId)) && applicationRepository.findByPositionIdAndCurriculumId(Long.parseLong(positionId), Long.parseLong(curriculumId)).size() == 0){
+    public Application createApplication(String positionId, String userId){
+        if(
+           positionRepository.existsById(Long.parseLong(positionId)) &&
+           applicationRepository.findByPositionIdAndUserId(Long.parseLong(positionId), Long.parseLong(userId)).size() == 0
+        )
+        {
             PositionEntity positionEntity = positionRepository.findById(Long.parseLong(positionId));
             ApplicationEntity applicationEntity = applicationRepository.save(
-                    new ApplicationEntity(positionEntity, Long.parseLong(curriculumId))
+                    new ApplicationEntity(positionEntity, Long.parseLong(userId))
             );
             return ApplicationMapper.INSTANCE.aplicationEntityToModel(applicationEntity);
         }
@@ -43,8 +47,8 @@ public class ApplicationDataSource {
         return ApplicationMapper.INSTANCE.aplicationEntityToModel(applicationEntity);
     }
 
-    public List<Application> getAllApplicationsByCurriculumId(String curriculumId){
-        List<ApplicationEntity> applicationEntities = applicationRepository.findByCurriculumId(Long.parseLong(curriculumId));
+    public List<Application> getAllApplicationsByUserId(String userId){
+        List<ApplicationEntity> applicationEntities = applicationRepository.findByUserId(Long.parseLong(userId));
         return ApplicationMapper.INSTANCE.applicationEntitiesToModels(applicationEntities);
     }
 }
