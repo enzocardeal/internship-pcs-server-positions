@@ -48,6 +48,7 @@ public class PositionDataSource {
     public Position createPosition(PositionInput positionInput){
         PositionEntity positionEntity = repository.save(
                 new PositionEntity(
+                        Long.parseLong(positionInput.userId()),
                         positionInput.positionName(),
                         positionInput.company(),
                         positionInput.role(),
@@ -61,6 +62,7 @@ public class PositionDataSource {
         PositionEntity positionEntity = repository.save(
                 new PositionEntity(
                         id,
+                        Long.parseLong(positionInput.userId()),
                         positionInput.positionName(),
                         positionInput.company(),
                         positionInput.role(),

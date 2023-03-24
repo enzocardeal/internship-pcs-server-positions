@@ -4,7 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .m2/*
-application-default.local.properties
+src/main/resources/application-default.local.properties
 
 ### STS ###
 .apt_generated

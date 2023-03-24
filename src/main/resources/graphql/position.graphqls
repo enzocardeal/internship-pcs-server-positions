@@ -2,6 +2,7 @@ scalar Date
 
 type Position {
     id: ID!
+    userId: ID!
     positionName: String!
     company: String!
     role: String!
@@ -18,6 +19,7 @@ input GetAllPositionsByIdsInput {
 }
 
 input CreatePositionInput {
+    userId: ID!
     positionName: String!
     company: String!
     role: String!
@@ -27,6 +29,7 @@ input CreatePositionInput {
 
 input UpdatePositionInput {
     id: ID!
+    userId: ID!
     positionName: String!
     company: String
     role: String

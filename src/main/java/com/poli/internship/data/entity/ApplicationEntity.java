@@ -1,22 +1,35 @@
 package com.poli.internship.data.entity;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Column;
 
 @Entity(name = "application")
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"position_id", "user_id"})
+})
 public class ApplicationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(name = "user_id")
+    private Long userId;
     @ManyToOne
     @JoinColumn(name = "position_id")
     private PositionEntity position;
-    private Long curriculumId;
-
 
     protected ApplicationEntity(){};
-    public ApplicationEntity(PositionEntity position, Long curriculumId) {
+    public ApplicationEntity(PositionEntity position, Long userId) {
         this.position = position;
-        this.curriculumId = curriculumId;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -27,7 +40,7 @@ public class ApplicationEntity {
         return position;
     }
 
-    public Long getCurriculumId() {
-        return curriculumId;
+    public Long getUserId() {
+        return userId;
     }
 }

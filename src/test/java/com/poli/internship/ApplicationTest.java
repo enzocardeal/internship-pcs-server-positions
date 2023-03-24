@@ -1,17 +1,17 @@
 package com.poli.internship;
 
+import com.poli.internship.api.context.JWTService;
 import com.poli.internship.data.datasource.ApplicationDataSource;
-import com.poli.internship.data.entity.ApplicationEntity;
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.repository.ApplicationRepository;
 import com.poli.internship.data.repository.PositionRepository;
-import com.poli.internship.domain.models.PositionModel;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
+import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -21,25 +21,40 @@ import java.util.List;
 import java.util.Map;
 
 import static com.poli.internship.domain.models.ApplicationModel.Application;
+import static com.poli.internship.domain.models.AuthTokenPayloadModel.AuthTokenPayload;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@AutoConfigureGraphQlTester
+@AutoConfigureHttpGraphQlTester
 @ActiveProfiles("test")
 public class ApplicationTest {
     @Autowired
-    private GraphQlTester tester;
-
+    private HttpGraphQlTester tester;
+    @Autowired
+    JWTService jwtService;
     @Autowired
     private ApplicationRepository applicationRepository;
-
     @Autowired
     private PositionRepository positionRepository;
-
     @Autowired
     private ApplicationDataSource applicationDataSource;
+    private HttpGraphQlTester testerWithAuth;
+    private AuthTokenPayload tokenPayload;
+    private String authToken;
+    private String userId = "123";
+    private String companyUserId = "321";
 
+    @BeforeEach
+    public void beforeEach() {
+        tokenPayload = new AuthTokenPayload(
+                userId,
+                "enzo@teste.com",
+                3600);
+        authToken = this.jwtService.createAuthorizationToken(tokenPayload);
+        testerWithAuth = this.tester.mutate().header("Authorization", authToken).build();
+    }
     @AfterEach
     public void afterEach(){
         this.applicationRepository.deleteAll();
@@ -50,6 +65,7 @@ public class ApplicationTest {
     public void createApplication(){
         PositionEntity positionEntity = this.positionRepository.save(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -62,9 +78,8 @@ public class ApplicationTest {
 
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("positionId", id);
-        input.put("curriculumId", "2");
 
-        Application application = this.tester.documentName("createApplication")
+        Application application = this.testerWithAuth.documentName("createApplication")
                 .variable("input", input)
                 .execute()
                 .path("createApplication")
@@ -72,21 +87,29 @@ public class ApplicationTest {
                 .get();
 
         assertThat(application.position()).isNotNull();
-        assertThat(application.curriculumId()).isNotNull();
+        assertThat(application.userId()).isEqualTo(userId);
         assertThat(application.position().positionName()).isEqualTo(positionEntity.getPositionName());
     }
 
     @Test
     public void deleteApplication(){
-        PositionEntity positionEntity = this.positionRepository.save(new PositionEntity("Estágio Quadrimestral", "BTG Pactual", "Security Office Intern", LocalDate.of(2023, 5, 1), LocalDate.of(2023, 8, 30)));
+        PositionEntity positionEntity = this.positionRepository.save(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
         String positionId = positionEntity.getId().toString();
 
-        Application application = this.applicationDataSource.createApplication(positionId, "2");
+        Application application = this.applicationDataSource.createApplication(positionId, userId);
 
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("id", application.id());
 
-        Boolean deleted = this.tester.documentName("deleteApplication")
+        Boolean deleted = this.testerWithAuth.documentName("deleteApplication")
                 .variable("input", input)
                 .execute()
                 .path("deleteApplication")
@@ -97,10 +120,11 @@ public class ApplicationTest {
     }
 
     @Test
-    public void getAllApplicationsByCurriculumId(){
+    public void getAllApplications(){
         List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -110,6 +134,7 @@ public class ApplicationTest {
         );
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -119,6 +144,7 @@ public class ApplicationTest {
         );
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -128,24 +154,20 @@ public class ApplicationTest {
         );
         this.positionRepository.saveAll(positionEntities);
 
-        String curriculumId = "1";
         List<Application> applications = new ArrayList<Application>();
         applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(0).getId()), curriculumId)
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(0).getId()), userId)
         );
         applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(1).getId()), curriculumId)
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(1).getId()), userId)
         );
         applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(2).getId()), curriculumId)
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(2).getId()), userId)
         );
-        Map<String, Object> input = new HashMap<String, Object>();
-        input.put("curriculumId", curriculumId);
 
-        List<HashMap> returnedApplications = this.tester.documentName("getAllApplicationsByCurriculumId")
-                .variable("input", input)
+        List<HashMap> returnedApplications = this.testerWithAuth.documentName("getAllApplications")
                 .execute()
-                .path("getAllApplicationsByCurriculumId")
+                .path("getAllApplications")
                  .entity(List.class)
                 .get();
 
@@ -153,15 +175,16 @@ public class ApplicationTest {
         assertThat(!((HashMap)returnedApplications.get(0).get("position")).isEmpty());
         assertThat(!((HashMap)returnedApplications.get(1).get("position")).isEmpty());
         assertThat(!((HashMap)returnedApplications.get(2).get("position")).isEmpty());
-        assertThat((String)returnedApplications.get(0).get("curriculumId")).isEqualTo(curriculumId);
-        assertThat((String)returnedApplications.get(1).get("curriculumId")).isEqualTo(curriculumId);
-        assertThat((String)returnedApplications.get(2).get("curriculumId")).isEqualTo(curriculumId);
+        assertThat((String)returnedApplications.get(0).get("userId")).isEqualTo(userId);
+        assertThat((String)returnedApplications.get(1).get("userId")).isEqualTo(userId);
+        assertThat((String)returnedApplications.get(2).get("userId")).isEqualTo(userId);
     }
 
     @Test
     public void getApplicationById(){
         PositionEntity positionEntity = this.positionRepository.save(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -171,11 +194,11 @@ public class ApplicationTest {
         );
         String id = positionEntity.getId().toString();
 
-        Application application = this.applicationDataSource.createApplication(id, "2");
+        Application application = this.applicationDataSource.createApplication(id, userId);
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("id", application.id());
 
-        Application applicationReturned = this.tester.documentName("getApplicationById")
+        Application applicationReturned = this.testerWithAuth.documentName("getApplicationById")
                 .variable("input", input)
                 .execute()
                 .path("getApplicationById")
@@ -183,6 +206,6 @@ public class ApplicationTest {
                 .get();
 
         assertThat(applicationReturned.id()).isEqualTo(application.id());
-        assertThat(applicationReturned.curriculumId()).isEqualTo(application.curriculumId());
+        assertThat(applicationReturned.userId()).isEqualTo(application.userId());
     }
 }

@@ -1,7 +1,7 @@
-query getAllApplicationsByCurriculumId($input: GetAllApplicationsByCurriculumId!) {
-    getAllApplicationsByCurriculumId(input: $input) {
+query getAllApplications{
+    getAllApplications {
         id
-        curriculumId
+        userId
         position{
             id
             positionName

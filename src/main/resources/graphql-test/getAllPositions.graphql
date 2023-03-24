@@ -1,6 +1,7 @@
 query getAllPositions {
     getAllPositions {
         id
+        userId
         company
         positionName
         role
