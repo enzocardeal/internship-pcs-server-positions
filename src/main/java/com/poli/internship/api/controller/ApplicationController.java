@@ -1,12 +1,14 @@
 package com.poli.internship.api.controller;
 
 import com.poli.internship.api.auth.GraphQLAuthorization;
+import com.poli.internship.api.error.CustomError;
 import com.poli.internship.domain.usecase.application.*;
 import graphql.GraphQLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.execution.ErrorType;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -56,7 +58,13 @@ public class ApplicationController {
         GraphQLAuthorization.checkAuthorization(ctx);
 
         Map data = (Map) input.get("input");
+        String id = (String) data.get("id");
 
-        return this.deleteApplicationUseCase.exec( (String) data.get("id"));
+        Application application = this.getApplicationByIdUseCase.exec(id);
+        if(!application.userId().equals((String)ctx.get("userId"))){
+            throw new CustomError("This application wasn't created by the current user.", ErrorType.UNAUTHORIZED);
+        }
+
+        return this.deleteApplicationUseCase.exec(id);
     }
 }
