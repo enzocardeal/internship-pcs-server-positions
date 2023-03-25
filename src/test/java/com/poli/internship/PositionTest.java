@@ -4,6 +4,7 @@ import com.poli.internship.api.context.JWTService;
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.repository.PositionRepository;
 import com.poli.internship.domain.models.AuthTokenPayloadModel;
+import com.poli.internship.domain.models.UserType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
@@ -42,6 +43,7 @@ public class PositionTest {
         tokenPayload = new AuthTokenPayloadModel.AuthTokenPayload(
                 companyUserId,
                 "enzo@teste.com",
+                UserType.COMPANY,
                 3600);
         authToken = this.jwtService.createAuthorizationToken(tokenPayload);
         testerWithAuth = this.tester.mutate().header("Authorization", authToken).build();
@@ -78,16 +80,7 @@ public class PositionTest {
 
     @Test
     public void getPositionById(){
-        PositionEntity positionEntity = this.repository.save(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
+        PositionEntity positionEntity = createElementOnDb();
         String id = positionEntity.getId().toString();
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("id", id);
@@ -107,39 +100,7 @@ public class PositionTest {
 
     @Test
     public void getAllPositionsByIds(){
-        List<PositionEntity> positionEntitiesToBeSaved = new ArrayList<PositionEntity>();
-        positionEntitiesToBeSaved.add(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
-        positionEntitiesToBeSaved.add(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
-        positionEntitiesToBeSaved.add(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
-
-        List<PositionEntity> positionEntities = (List<PositionEntity>) this.repository.saveAll(positionEntitiesToBeSaved);
+        List<PositionEntity> positionEntities = createElementsOnDb();
         List<String> ids = new ArrayList<String>();
 
         for(PositionEntity positionEntity : positionEntities){
@@ -180,31 +141,7 @@ public class PositionTest {
 
     @Test
     public void getAllPositions(){
-        List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
-        positionEntities.add(this.repository.save(new PositionEntity(
-                Long.parseLong(companyUserId),
-                "Estágio Quadrimestral",
-                "BTG Pactual",
-                "Security Office Intern",
-                LocalDate.of(2023, 5, 1),
-                LocalDate.of(2023, 8, 30
-                ))));
-        positionEntities.add(this.repository.save(new PositionEntity(
-                Long.parseLong(companyUserId),
-                "Estágio Quadrimestral",
-                "BTG Pactual",
-                "Security Office Intern",
-                LocalDate.of(2023, 5, 1),
-                LocalDate.of(2023, 8, 30
-                ))));
-        positionEntities.add(this.repository.save(new PositionEntity(
-                Long.parseLong(companyUserId),
-                "Estágio Quadrimestral",
-                "BTG Pactual",
-                "Security Office Intern",
-                LocalDate.of(2023, 5, 1),
-                LocalDate.of(2023, 8, 30
-                ))));
+        List<PositionEntity> positionEntities = createElementsOnDb();
 
         List<HashMap> positions = this.testerWithAuth.documentName("getAllPositions")
                 .execute()
@@ -225,16 +162,7 @@ public class PositionTest {
 
     @Test
     public void deletePosition(){
-        PositionEntity positionEntity = this.repository.save(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
+        PositionEntity positionEntity = createElementOnDb();
         String id = positionEntity.getId().toString();
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("id", id);
@@ -250,15 +178,7 @@ public class PositionTest {
 
     @Test
     public void updatePosition(){
-        PositionEntity positionEntity = this.repository.save(new PositionEntity(
-                Long.parseLong(companyUserId),
-                "Estágio Quadrimestral",
-                "BTG Pactual",
-                "Security Office Intern",
-                LocalDate.of(2023, 5, 1),
-                LocalDate.of(2023, 8, 30)
-            )
-        );
+        PositionEntity positionEntity = createElementOnDb();
         String id = positionEntity.getId().toString();
 
         Map<String, Object> input = new HashMap<String, Object>();
@@ -282,5 +202,57 @@ public class PositionTest {
         assertThat(position.startsAt()).isEqualTo(positionEntity.getStartsAt());
         assertThat(position.endsAt()).isEqualTo(positionEntity.getEndsAt());
         assertThat(position).hasOnlyFields("id", "userId", "company", "positionName", "role", "startsAt", "endsAt");
+    }
+
+    private PositionEntity createElementOnDb(){
+        PositionEntity positionEntity = this.repository.save(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+
+        return positionEntity;
+    }
+
+    private List<PositionEntity> createElementsOnDb(){
+        List<PositionEntity> positionEntitiesToBeSaved = new ArrayList<PositionEntity>();
+        positionEntitiesToBeSaved.add(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+        positionEntitiesToBeSaved.add(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+        positionEntitiesToBeSaved.add(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+
+        List<PositionEntity> positionEntities = (List<PositionEntity>) this.repository.saveAll(positionEntitiesToBeSaved);
+        return positionEntities;
     }
 }

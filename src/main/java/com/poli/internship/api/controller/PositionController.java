@@ -2,6 +2,7 @@ package com.poli.internship.api.controller;
 
 import com.poli.internship.api.auth.GraphQLAuthorization;
 import com.poli.internship.api.error.CustomError;
+import com.poli.internship.domain.models.UserType;
 import com.poli.internship.domain.usecase.position.*;
 import graphql.GraphQLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,9 @@ public class PositionController {
     @MutationMapping
     public Position createPosition(@Argument Map input, GraphQLContext ctx){
         GraphQLAuthorization.checkAuthorization(ctx);
+        if(UserType.valueOf(ctx.get("userType")) != UserType.COMPANY) {
+            throw new CustomError("Wrong user type.", ErrorType.FORBIDDEN);
+        }
 
         Map data = (Map)input.get("input");
         return this.createPositionUseCase.exec(
@@ -72,6 +76,9 @@ public class PositionController {
     @MutationMapping
     public Position updatePosition(@Argument Map input, GraphQLContext ctx){
         GraphQLAuthorization.checkAuthorization(ctx);
+        if(UserType.valueOf(ctx.get("userType")) != UserType.COMPANY) {
+            throw new CustomError("Wrong user type.", ErrorType.FORBIDDEN);
+        }
 
         Map data = (Map)input.get("input");
         String id = (String)data.get("id");
@@ -80,6 +87,7 @@ public class PositionController {
         if(!positionToBeUpdated.userId().equals((String)ctx.get("userId"))){
             throw new CustomError("This position wasn't created by the current user.", ErrorType.UNAUTHORIZED);
         }
+
 
         return this.updatePositionUseCase.exec(
                 new PositionInput(
@@ -97,6 +105,9 @@ public class PositionController {
     @MutationMapping
     public Boolean deletePosition(@Argument Map input, GraphQLContext ctx){
         GraphQLAuthorization.checkAuthorization(ctx);
+        if(UserType.valueOf(ctx.get("userType")) != UserType.COMPANY) {
+            throw new CustomError("Wrong user type.", ErrorType.FORBIDDEN);
+        }
 
         Map data = (Map)input.get("input");
         String id = (String)data.get("id");

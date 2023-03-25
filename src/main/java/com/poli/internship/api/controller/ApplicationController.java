@@ -2,6 +2,7 @@ package com.poli.internship.api.controller;
 
 import com.poli.internship.api.auth.GraphQLAuthorization;
 import com.poli.internship.api.error.CustomError;
+import com.poli.internship.domain.models.UserType;
 import com.poli.internship.domain.usecase.application.*;
 import graphql.GraphQLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +33,20 @@ public class ApplicationController {
         GraphQLAuthorization.checkAuthorization(ctx);
 
         Map data = (Map) input.get("input");
-        return this.getApplicationByIdUseCase.exec((String) data.get("id"));
+        Application application = this.getApplicationByIdUseCase.exec((String) data.get("id"));
+        if(UserType.valueOf(ctx.get("userType")) == UserType.STUDENT && !((String)ctx.get("userId")).equals(application.userId())) {
+            throw new CustomError("Not current student application.", ErrorType.UNAUTHORIZED);
+        }
+
+        return application;
     }
 
     @QueryMapping
     public List<Application> getAllApplications(GraphQLContext ctx) {
         GraphQLAuthorization.checkAuthorization(ctx);
+        if(UserType.valueOf(ctx.get("userType")) == UserType.STUDENT){
+            throw new CustomError("User not allowed to check applications.", ErrorType.UNAUTHORIZED);
+        }
 
         return this.getAllApplicationsUseCase.exec((String) ctx.get("userId"));
     }
@@ -45,6 +54,9 @@ public class ApplicationController {
     @MutationMapping
     public Application createApplication(@Argument Map input, GraphQLContext ctx) {
         GraphQLAuthorization.checkAuthorization(ctx);
+        if(UserType.valueOf(ctx.get("userType")) != UserType.STUDENT){
+            throw new CustomError("User not allowed to create application.", ErrorType.UNAUTHORIZED);
+        }
 
         Map data = (Map) input.get("input");
         return this.createApplicationUseCase.exec(
@@ -56,7 +68,9 @@ public class ApplicationController {
     @MutationMapping
     public Boolean deleteApplication(@Argument Map input, GraphQLContext ctx){
         GraphQLAuthorization.checkAuthorization(ctx);
-
+        if(UserType.valueOf(ctx.get("userType")) != UserType.STUDENT){
+            throw new CustomError("User not allowed to delete application.", ErrorType.UNAUTHORIZED);
+        }
         Map data = (Map) input.get("input");
         String id = (String) data.get("id");
 
