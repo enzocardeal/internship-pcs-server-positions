@@ -85,7 +85,7 @@ public class PositionController {
 
         Position positionToBeUpdated = this.getPositionByIdUseCase.exec((String)data.get("id"));
         if(!positionToBeUpdated.userId().equals((String)ctx.get("userId"))){
-            throw new CustomError("This position wasn't created by the current user.", ErrorType.UNAUTHORIZED);
+            throw new CustomError("This position wasn't created by the current user.", ErrorType.FORBIDDEN);
         }
 
 
@@ -114,7 +114,7 @@ public class PositionController {
 
         Position position = this.getPositionByIdUseCase.exec(id);
         if(!position.userId().equals((String)ctx.get("userId"))){
-            throw new CustomError("This position wasn't created by the current user.", ErrorType.UNAUTHORIZED);
+            throw new CustomError("This position wasn't created by the current user.", ErrorType.FORBIDDEN);
         }
 
         return this.deletePositionUseCase.exec(id);

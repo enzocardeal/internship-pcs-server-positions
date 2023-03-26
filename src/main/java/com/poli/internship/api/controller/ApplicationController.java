@@ -35,7 +35,7 @@ public class ApplicationController {
         Map data = (Map) input.get("input");
         Application application = this.getApplicationByIdUseCase.exec((String) data.get("id"));
         if(UserType.valueOf(ctx.get("userType")) == UserType.STUDENT && !((String)ctx.get("userId")).equals(application.userId())) {
-            throw new CustomError("Not current student application.", ErrorType.UNAUTHORIZED);
+            throw new CustomError("Not current student application.", ErrorType.FORBIDDEN);
         }
 
         return application;
@@ -45,7 +45,7 @@ public class ApplicationController {
     public List<Application> getAllApplications(GraphQLContext ctx) {
         GraphQLAuthorization.checkAuthorization(ctx);
         if(UserType.valueOf(ctx.get("userType")) == UserType.STUDENT){
-            throw new CustomError("User not allowed to check applications.", ErrorType.UNAUTHORIZED);
+            throw new CustomError("User not allowed to check applications.", ErrorType.FORBIDDEN);
         }
 
         return this.getAllApplicationsUseCase.exec((String) ctx.get("userId"));
@@ -55,7 +55,7 @@ public class ApplicationController {
     public Application createApplication(@Argument Map input, GraphQLContext ctx) {
         GraphQLAuthorization.checkAuthorization(ctx);
         if(UserType.valueOf(ctx.get("userType")) != UserType.STUDENT){
-            throw new CustomError("User not allowed to create application.", ErrorType.UNAUTHORIZED);
+            throw new CustomError("User not allowed to create application.", ErrorType.FORBIDDEN);
         }
 
         Map data = (Map) input.get("input");
@@ -69,14 +69,14 @@ public class ApplicationController {
     public Boolean deleteApplication(@Argument Map input, GraphQLContext ctx){
         GraphQLAuthorization.checkAuthorization(ctx);
         if(UserType.valueOf(ctx.get("userType")) != UserType.STUDENT){
-            throw new CustomError("User not allowed to delete application.", ErrorType.UNAUTHORIZED);
+            throw new CustomError("User not allowed to delete application.", ErrorType.FORBIDDEN);
         }
         Map data = (Map) input.get("input");
         String id = (String) data.get("id");
 
         Application application = this.getApplicationByIdUseCase.exec(id);
         if(!application.userId().equals((String)ctx.get("userId"))){
-            throw new CustomError("This application wasn't created by the current user.", ErrorType.UNAUTHORIZED);
+            throw new CustomError("This application wasn't created by the current user.", ErrorType.FORBIDDEN);
         }
 
         return this.deleteApplicationUseCase.exec(id);
