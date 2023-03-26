@@ -5,6 +5,7 @@ import com.poli.internship.data.datasource.ApplicationDataSource;
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.repository.ApplicationRepository;
 import com.poli.internship.data.repository.PositionRepository;
+import com.poli.internship.domain.models.UserType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,7 @@ public class ApplicationTest {
         tokenPayload = new AuthTokenPayload(
                 userId,
                 "enzo@teste.com",
+                UserType.STUDENT,
                 3600);
         authToken = this.jwtService.createAuthorizationToken(tokenPayload);
         testerWithAuth = this.tester.mutate().header("Authorization", authToken).build();
@@ -93,15 +95,7 @@ public class ApplicationTest {
 
     @Test
     public void deleteApplication(){
-        PositionEntity positionEntity = this.positionRepository.save(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
+        PositionEntity positionEntity = createElementOnDb();
         String positionId = positionEntity.getId().toString();
 
         Application application = this.applicationDataSource.createApplication(positionId, userId);
@@ -121,6 +115,14 @@ public class ApplicationTest {
 
     @Test
     public void getAllApplications(){
+        tokenPayload = new AuthTokenPayload(
+                userId,
+                "enzo@teste.com",
+                UserType.COMPANY,
+                3600);
+        authToken = this.jwtService.createAuthorizationToken(tokenPayload);
+        testerWithAuth = this.tester.mutate().header("Authorization", authToken).build();
+
         List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
         positionEntities.add(
                 new PositionEntity(
@@ -182,16 +184,7 @@ public class ApplicationTest {
 
     @Test
     public void getApplicationById(){
-        PositionEntity positionEntity = this.positionRepository.save(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
+        PositionEntity positionEntity = createElementOnDb();
         String id = positionEntity.getId().toString();
 
         Application application = this.applicationDataSource.createApplication(id, userId);
@@ -208,4 +201,19 @@ public class ApplicationTest {
         assertThat(applicationReturned.id()).isEqualTo(application.id());
         assertThat(applicationReturned.userId()).isEqualTo(application.userId());
     }
+    private PositionEntity createElementOnDb(){
+        PositionEntity positionEntity = this.positionRepository.save(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+
+        return positionEntity;
+    }
 }
+
