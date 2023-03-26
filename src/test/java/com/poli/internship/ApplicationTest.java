@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.poli.internship.InternshipApplication.LOGGER;
 import static com.poli.internship.domain.models.ApplicationModel.Application;
 import static com.poli.internship.domain.models.AuthTokenPayloadModel.AuthTokenPayload;
 import static com.poli.internship.domain.models.ApplicationModel.ApplicationMessage;
@@ -116,7 +117,7 @@ public class ApplicationTest {
             subscriber.startAsync().awaitRunning();
             subscriber.awaitTerminated(10, TimeUnit.SECONDS);
         } catch (Exception e) {
-            System.out.println(e);
+            LOGGER.error(e.getMessage(), e);
         }
         assertThat(application.position()).isNotNull();
         assertThat(application.userId()).isEqualTo(userId);
@@ -162,7 +163,7 @@ public class ApplicationTest {
             subscriber.startAsync().awaitRunning();
             subscriber.awaitTerminated(10, TimeUnit.SECONDS);
         } catch (Exception e) {
-            System.out.println(e);
+            LOGGER.error(e.getMessage(), e);
         }
 
         assertTrue(deleted);
@@ -309,8 +310,7 @@ public class ApplicationTest {
 
         } catch (Exception e){
             subscriber.stopAsync();
-            System.out.println(e);
-            System.out.println("Failed to setup pub sub test environment.");
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
