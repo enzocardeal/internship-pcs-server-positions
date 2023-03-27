@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.poli.internship.InternshipApplication.LOGGER;
 import static com.poli.internship.domain.models.ApplicationModel.Application;
 import static com.poli.internship.domain.models.ApplicationModel.ApplicationMessage;
 
@@ -49,6 +50,7 @@ public class ApplicationDataSource {
             } catch (Exception e){
                 applicationRepository.delete(applicationEntity);
 
+                LOGGER.error(e.getMessage(), e);
                 throw new CustomError("Application creation failed.", ErrorType.INTERNAL_ERROR);
             }
             return ApplicationMapper.INSTANCE.aplicationEntityToModel(applicationEntity);
@@ -73,6 +75,8 @@ public class ApplicationDataSource {
                 messagingGateway.sendToPubsub(message);
             } catch (Exception e){
                 applicationRepository.save(applicationEntity);
+
+                LOGGER.error(e.getMessage(), e);
                 throw new CustomError("Application deletion failed.", ErrorType.INTERNAL_ERROR);
             }
             return true;
