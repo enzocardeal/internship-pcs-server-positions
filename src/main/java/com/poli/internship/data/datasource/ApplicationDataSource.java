@@ -57,8 +57,8 @@ public class ApplicationDataSource {
     }
 
     public Boolean deleteApplication(String id){
-        if(applicationRepository.existsById(Long.parseLong(id))){
-            ApplicationEntity applicationEntity = applicationRepository.findById(Long.parseLong(id));
+        ApplicationEntity applicationEntity = applicationRepository.findById(Long.parseLong(id));
+        if(applicationEntity != null){
             String companyId = applicationEntity.getPosition().getUserId().toString();
             applicationRepository.deleteById(Long.parseLong(id));
 
