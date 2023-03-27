@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 
 import static com.poli.internship.domain.models.AuthTokenPayloadModel.AuthTokenPayload;
+import static com.poli.internship.InternshipApplication.LOGGER;
 
 @Service
 public class JWTService {
@@ -33,6 +34,7 @@ public class JWTService {
             DecodedJWT decodedJWT = verifier.verify(token);
             return decodedJWT;
         } catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
             return null;
         }
 
