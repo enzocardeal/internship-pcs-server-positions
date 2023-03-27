@@ -1,15 +1,27 @@
 package com.poli.internship;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.gax.core.CredentialsProvider;
+import com.google.api.gax.core.NoCredentialsProvider;
+import com.google.api.gax.grpc.GrpcTransportChannel;
+import com.google.api.gax.rpc.FixedTransportChannelProvider;
+import com.google.api.gax.rpc.TransportChannelProvider;
+import com.google.cloud.pubsub.v1.*;
+import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.PubsubMessage;
 import com.poli.internship.api.context.JWTService;
 import com.poli.internship.data.datasource.ApplicationDataSource;
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.repository.ApplicationRepository;
 import com.poli.internship.data.repository.PositionRepository;
+import com.poli.internship.domain.models.CurriculumAuthorizationActionType;
 import com.poli.internship.domain.models.UserType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
@@ -20,9 +32,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.poli.internship.domain.models.ApplicationModel.Application;
 import static com.poli.internship.domain.models.AuthTokenPayloadModel.AuthTokenPayload;
+import static com.poli.internship.domain.models.ApplicationModel.ApplicationMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,11 +44,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @AutoConfigureHttpGraphQlTester
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ApplicationTest {
     @Autowired
     private HttpGraphQlTester tester;
     @Autowired
     JWTService jwtService;
+
+    @Value("${spring.cloud.gcp.pubsub.emulator-host}")
+    private String pubsubEmulatorHostport;
+    private ManagedChannel channel;
+    private Subscriber subscriber;
+    private MessageReceiver receiver;
+    private String messageReceived;
+    private String messageId;
+
     @Autowired
     private ApplicationRepository applicationRepository;
     @Autowired
@@ -64,7 +88,8 @@ public class ApplicationTest {
     }
 
     @Test
-    public void createApplication(){
+    public void createApplication() throws JsonProcessingException {
+        pubsubServiceUp();
         PositionEntity positionEntity = this.positionRepository.save(
                 new PositionEntity(
                         Long.parseLong(companyUserId),
@@ -87,14 +112,37 @@ public class ApplicationTest {
                 .path("createApplication")
                 .entity(Application.class)
                 .get();
-
+        try {
+            subscriber.startAsync().awaitRunning();
+            subscriber.awaitTerminated(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         assertThat(application.position()).isNotNull();
         assertThat(application.userId()).isEqualTo(userId);
         assertThat(application.position().positionName()).isEqualTo(positionEntity.getPositionName());
+
+        assertThat(messageId).isNotNull();
+        assertThat(messageReceived).isEqualTo(
+                (new ObjectMapper())
+                        .writeValueAsString(
+                                (
+                                        new ApplicationMessage(
+                                        CurriculumAuthorizationActionType.GRANT,
+                                        Long.toString(positionEntity.getUserId()),
+                                        application.userId()
+                                        )
+                                )
+                        )
+        );
+        messageReceived = null;
+        messageId = null;
+        pubsubServiceDown();
     }
 
     @Test
-    public void deleteApplication(){
+    public void deleteApplication() throws JsonProcessingException {
+        pubsubServiceUp();
         PositionEntity positionEntity = createElementOnDb();
         String positionId = positionEntity.getId().toString();
 
@@ -110,7 +158,31 @@ public class ApplicationTest {
                 .entity(Boolean.class)
                 .get();
 
+        try {
+            subscriber.startAsync().awaitRunning();
+            subscriber.awaitTerminated(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
         assertTrue(deleted);
+
+        assertThat(messageId).isNotNull();
+        assertThat(messageReceived).isEqualTo(
+                (new ObjectMapper())
+                        .writeValueAsString(
+                                (
+                                        new ApplicationMessage(
+                                                CurriculumAuthorizationActionType.REVOKE,
+                                                Long.toString(positionEntity.getUserId()),
+                                                application.userId()
+                                        )
+                                )
+                        )
+        );
+        messageReceived = null;
+        messageId = null;
+        pubsubServiceDown();
     }
 
     @Test
@@ -214,6 +286,37 @@ public class ApplicationTest {
         );
 
         return positionEntity;
+    }
+
+    private void pubsubServiceUp() {
+        channel = ManagedChannelBuilder.forTarget(pubsubEmulatorHostport).usePlaintext().build();
+        TransportChannelProvider channelProvider = FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
+        CredentialsProvider credentialsProvider = NoCredentialsProvider.create();
+
+        try{
+            ProjectSubscriptionName subscriptionName =
+                    ProjectSubscriptionName.of("PROJECT_TEST_ID", "curriculum-authorization-sub");
+            receiver =
+                    (PubsubMessage message, AckReplyConsumer consumer) -> {
+                        messageId = message.getMessageId();
+                        messageReceived = message.getData().toStringUtf8();
+                        consumer.ack();
+                    };
+            subscriber = Subscriber.newBuilder(subscriptionName, receiver)
+                    .setCredentialsProvider(credentialsProvider)
+                    .setChannelProvider(channelProvider)
+                    .build();
+
+        } catch (Exception e){
+            subscriber.stopAsync();
+            System.out.println(e);
+            System.out.println("Failed to setup pub sub test environment.");
+        }
+    }
+
+    private void pubsubServiceDown(){
+        subscriber.stopAsync();
+        channel.shutdown();
     }
 }
 

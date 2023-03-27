@@ -51,6 +51,17 @@ services:
     networks:
       - app-network
     profiles: ["default"]
+  pub_sub_emulator:
+    container_name: pub_sub_emulator
+    image: thekevjames/gcloud-pubsub-emulator:422.0.0
+    restart: always
+    ports:
+      - 8681:8681
+    environment:
+      - PUBSUB_PROJECT1=PROJECT_TEST_ID,curriculum-authorization:curriculum-authorization-sub
+    expose:
+      - 8681
+    profiles: ["test"]
 
 networks:
   app-network:
