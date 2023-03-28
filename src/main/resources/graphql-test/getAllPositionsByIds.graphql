@@ -1,6 +1,7 @@
 query getAllPositionsByIds($input: GetAllPositionsByIdsInput!){
     getAllPositionsByIds(input: $input){
         id
+        userId
         positionName
         company
         role

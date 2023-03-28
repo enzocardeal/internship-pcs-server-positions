@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ApplicationRepository extends CrudRepository<ApplicationEntity, Long> {
     ApplicationEntity findById(long id);
-    List<ApplicationEntity> findByPositionIdAndCurriculumId(Long positionId, Long curriculumId);
-    List<ApplicationEntity> findByCurriculumId(Long curriculumId);
+    List<ApplicationEntity> findByPositionIdAndUserId(Long positionId, Long userId);
+    List<ApplicationEntity> findByUserId(Long userId);
 }

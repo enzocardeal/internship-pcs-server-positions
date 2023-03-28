@@ -1,6 +1,7 @@
 query getPositionById($input: GetPositionByIdInput!) {
     getPositionById(input: $input) {
         id
+        userId
         company
         positionName
         role

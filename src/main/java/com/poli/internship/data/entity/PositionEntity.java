@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 
 import java.time.LocalDate;
 
@@ -12,8 +13,8 @@ public class PositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-
+    @Column(name = "user_id")
+    private Long userId;
     private String positionName;
     private String company;
     private String role;
@@ -21,7 +22,8 @@ public class PositionEntity {
     private LocalDate endsAt;
 
     protected PositionEntity(){}
-    public PositionEntity(String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt) {
+    public PositionEntity(Long userId, String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt) {
+        this.userId = userId;
         this.positionName = positionName;
         this.company = company;
         this.role = role;
@@ -29,8 +31,9 @@ public class PositionEntity {
         this.endsAt = endsAt;
     }
 
-    public PositionEntity(Long id, String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt) {
+    public PositionEntity(Long id, Long userId, String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt) {
         this.id = id;
+        this.userId = userId;
         this.positionName = positionName;
         this.company = company;
         this.role = role;
@@ -40,6 +43,10 @@ public class PositionEntity {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     public String getPositionName() {

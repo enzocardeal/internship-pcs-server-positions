@@ -1,17 +1,30 @@
 package com.poli.internship;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.gax.core.CredentialsProvider;
+import com.google.api.gax.core.NoCredentialsProvider;
+import com.google.api.gax.grpc.GrpcTransportChannel;
+import com.google.api.gax.rpc.FixedTransportChannelProvider;
+import com.google.api.gax.rpc.TransportChannelProvider;
+import com.google.cloud.pubsub.v1.*;
+import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.PubsubMessage;
+import com.poli.internship.api.context.JWTService;
 import com.poli.internship.data.datasource.ApplicationDataSource;
-import com.poli.internship.data.entity.ApplicationEntity;
 import com.poli.internship.data.entity.PositionEntity;
 import com.poli.internship.data.repository.ApplicationRepository;
 import com.poli.internship.data.repository.PositionRepository;
-import com.poli.internship.domain.models.PositionModel;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import com.poli.internship.domain.models.CurriculumAuthorizationActionType;
+import com.poli.internship.domain.models.UserType;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -19,27 +32,56 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import static com.poli.internship.InternshipApplication.LOGGER;
 import static com.poli.internship.domain.models.ApplicationModel.Application;
+import static com.poli.internship.domain.models.AuthTokenPayloadModel.AuthTokenPayload;
+import static com.poli.internship.domain.models.ApplicationModel.ApplicationMessage;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@AutoConfigureGraphQlTester
+@AutoConfigureHttpGraphQlTester
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ApplicationTest {
     @Autowired
-    private GraphQlTester tester;
+    private HttpGraphQlTester tester;
+    @Autowired
+    JWTService jwtService;
+
+    @Value("${spring.cloud.gcp.pubsub.emulator-host}")
+    private String pubsubEmulatorHostport;
+    private ManagedChannel channel;
+    private Subscriber subscriber;
+    private MessageReceiver receiver;
+    private String messageReceived;
+    private String messageId;
 
     @Autowired
     private ApplicationRepository applicationRepository;
-
     @Autowired
     private PositionRepository positionRepository;
-
     @Autowired
     private ApplicationDataSource applicationDataSource;
+    private HttpGraphQlTester testerWithAuth;
+    private AuthTokenPayload tokenPayload;
+    private String authToken;
+    private String userId = "123";
+    private String companyUserId = "321";
 
+    @BeforeEach
+    public void beforeEach() {
+        tokenPayload = new AuthTokenPayload(
+                userId,
+                "enzo@teste.com",
+                UserType.STUDENT,
+                3600);
+        authToken = this.jwtService.createAuthorizationToken(tokenPayload);
+        testerWithAuth = this.tester.mutate().header("Authorization", authToken).build();
+    }
     @AfterEach
     public void afterEach(){
         this.applicationRepository.deleteAll();
@@ -47,9 +89,11 @@ public class ApplicationTest {
     }
 
     @Test
-    public void createApplication(){
+    public void createApplication() throws JsonProcessingException {
+        pubsubServiceUp();
         PositionEntity positionEntity = this.positionRepository.save(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -62,45 +106,100 @@ public class ApplicationTest {
 
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("positionId", id);
-        input.put("curriculumId", "2");
 
-        Application application = this.tester.documentName("createApplication")
+        Application application = this.testerWithAuth.documentName("createApplication")
                 .variable("input", input)
                 .execute()
                 .path("createApplication")
                 .entity(Application.class)
                 .get();
-
+        try {
+            subscriber.startAsync().awaitRunning();
+            subscriber.awaitTerminated(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
         assertThat(application.position()).isNotNull();
-        assertThat(application.curriculumId()).isNotNull();
+        assertThat(application.userId()).isEqualTo(userId);
         assertThat(application.position().positionName()).isEqualTo(positionEntity.getPositionName());
+
+        assertThat(messageId).isNotNull();
+        assertThat(messageReceived).isEqualTo(
+                (new ObjectMapper())
+                        .writeValueAsString(
+                                (
+                                        new ApplicationMessage(
+                                        CurriculumAuthorizationActionType.GRANT,
+                                        Long.toString(positionEntity.getUserId()),
+                                        application.userId()
+                                        )
+                                )
+                        )
+        );
+        messageReceived = null;
+        messageId = null;
+        pubsubServiceDown();
     }
 
     @Test
-    public void deleteApplication(){
-        PositionEntity positionEntity = this.positionRepository.save(new PositionEntity("Estágio Quadrimestral", "BTG Pactual", "Security Office Intern", LocalDate.of(2023, 5, 1), LocalDate.of(2023, 8, 30)));
+    public void deleteApplication() throws JsonProcessingException {
+        pubsubServiceUp();
+        PositionEntity positionEntity = createElementOnDb();
         String positionId = positionEntity.getId().toString();
 
-        Application application = this.applicationDataSource.createApplication(positionId, "2");
+        Application application = this.applicationDataSource.createApplication(positionId, userId);
 
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("id", application.id());
 
-        Boolean deleted = this.tester.documentName("deleteApplication")
+        Boolean deleted = this.testerWithAuth.documentName("deleteApplication")
                 .variable("input", input)
                 .execute()
                 .path("deleteApplication")
                 .entity(Boolean.class)
                 .get();
 
+        try {
+            subscriber.startAsync().awaitRunning();
+            subscriber.awaitTerminated(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
         assertTrue(deleted);
+
+        assertThat(messageId).isNotNull();
+        assertThat(messageReceived).isEqualTo(
+                (new ObjectMapper())
+                        .writeValueAsString(
+                                (
+                                        new ApplicationMessage(
+                                                CurriculumAuthorizationActionType.REVOKE,
+                                                Long.toString(positionEntity.getUserId()),
+                                                application.userId()
+                                        )
+                                )
+                        )
+        );
+        messageReceived = null;
+        messageId = null;
+        pubsubServiceDown();
     }
 
     @Test
-    public void getAllApplicationsByCurriculumId(){
+    public void getAllApplications(){
+        tokenPayload = new AuthTokenPayload(
+                userId,
+                "enzo@teste.com",
+                UserType.COMPANY,
+                3600);
+        authToken = this.jwtService.createAuthorizationToken(tokenPayload);
+        testerWithAuth = this.tester.mutate().header("Authorization", authToken).build();
+
         List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -110,6 +209,7 @@ public class ApplicationTest {
         );
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -119,6 +219,7 @@ public class ApplicationTest {
         );
         positionEntities.add(
                 new PositionEntity(
+                        Long.parseLong(companyUserId),
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
@@ -128,24 +229,20 @@ public class ApplicationTest {
         );
         this.positionRepository.saveAll(positionEntities);
 
-        String curriculumId = "1";
         List<Application> applications = new ArrayList<Application>();
         applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(0).getId()), curriculumId)
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(0).getId()), userId)
         );
         applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(1).getId()), curriculumId)
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(1).getId()), userId)
         );
         applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(2).getId()), curriculumId)
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(2).getId()), userId)
         );
-        Map<String, Object> input = new HashMap<String, Object>();
-        input.put("curriculumId", curriculumId);
 
-        List<HashMap> returnedApplications = this.tester.documentName("getAllApplicationsByCurriculumId")
-                .variable("input", input)
+        List<HashMap> returnedApplications = this.testerWithAuth.documentName("getAllApplications")
                 .execute()
-                .path("getAllApplicationsByCurriculumId")
+                .path("getAllApplications")
                  .entity(List.class)
                 .get();
 
@@ -153,29 +250,21 @@ public class ApplicationTest {
         assertThat(!((HashMap)returnedApplications.get(0).get("position")).isEmpty());
         assertThat(!((HashMap)returnedApplications.get(1).get("position")).isEmpty());
         assertThat(!((HashMap)returnedApplications.get(2).get("position")).isEmpty());
-        assertThat((String)returnedApplications.get(0).get("curriculumId")).isEqualTo(curriculumId);
-        assertThat((String)returnedApplications.get(1).get("curriculumId")).isEqualTo(curriculumId);
-        assertThat((String)returnedApplications.get(2).get("curriculumId")).isEqualTo(curriculumId);
+        assertThat((String)returnedApplications.get(0).get("userId")).isEqualTo(userId);
+        assertThat((String)returnedApplications.get(1).get("userId")).isEqualTo(userId);
+        assertThat((String)returnedApplications.get(2).get("userId")).isEqualTo(userId);
     }
 
     @Test
     public void getApplicationById(){
-        PositionEntity positionEntity = this.positionRepository.save(
-                new PositionEntity(
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
+        PositionEntity positionEntity = createElementOnDb();
         String id = positionEntity.getId().toString();
 
-        Application application = this.applicationDataSource.createApplication(id, "2");
+        Application application = this.applicationDataSource.createApplication(id, userId);
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("id", application.id());
 
-        Application applicationReturned = this.tester.documentName("getApplicationById")
+        Application applicationReturned = this.testerWithAuth.documentName("getApplicationById")
                 .variable("input", input)
                 .execute()
                 .path("getApplicationById")
@@ -183,6 +272,51 @@ public class ApplicationTest {
                 .get();
 
         assertThat(applicationReturned.id()).isEqualTo(application.id());
-        assertThat(applicationReturned.curriculumId()).isEqualTo(application.curriculumId());
+        assertThat(applicationReturned.userId()).isEqualTo(application.userId());
+    }
+    private PositionEntity createElementOnDb(){
+        PositionEntity positionEntity = this.positionRepository.save(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+
+        return positionEntity;
+    }
+
+    private void pubsubServiceUp() {
+        channel = ManagedChannelBuilder.forTarget(pubsubEmulatorHostport).usePlaintext().build();
+        TransportChannelProvider channelProvider = FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
+        CredentialsProvider credentialsProvider = NoCredentialsProvider.create();
+
+        try{
+            ProjectSubscriptionName subscriptionName =
+                    ProjectSubscriptionName.of("PROJECT_TEST_ID", "curriculum-authorization-sub");
+            receiver =
+                    (PubsubMessage message, AckReplyConsumer consumer) -> {
+                        messageId = message.getMessageId();
+                        messageReceived = message.getData().toStringUtf8();
+                        consumer.ack();
+                    };
+            subscriber = Subscriber.newBuilder(subscriptionName, receiver)
+                    .setCredentialsProvider(credentialsProvider)
+                    .setChannelProvider(channelProvider)
+                    .build();
+
+        } catch (Exception e){
+            subscriber.stopAsync();
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    private void pubsubServiceDown(){
+        subscriber.stopAsync();
+        channel.shutdown();
     }
 }
+

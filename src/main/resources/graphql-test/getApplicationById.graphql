@@ -1,7 +1,7 @@
 query getApplicationById($input: GetApplicationById!) {
     getApplicationById(input: $input) {
         id
-        curriculumId
+        userId
         position{
             id
             positionName

@@ -1,12 +1,11 @@
 type Application {
     id: ID!
     position: Position!
-    curriculumId: ID!
+    userId: ID!
 }
 
 input CreateApplicationInput {
     positionId: String!
-    curriculumId: String!
 }
 
 input DeleteApplicationInput {
@@ -15,8 +14,4 @@ input DeleteApplicationInput {
 
 input GetApplicationById {
     id: ID!
-}
-
-input GetAllApplicationsByCurriculumId {
-    curriculumId: ID!
 }
