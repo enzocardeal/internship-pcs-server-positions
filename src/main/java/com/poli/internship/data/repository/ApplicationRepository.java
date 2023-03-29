@@ -9,4 +9,5 @@ public interface ApplicationRepository extends CrudRepository<ApplicationEntity,
     ApplicationEntity findById(long id);
     List<ApplicationEntity> findByPositionIdAndUserId(Long positionId, Long userId);
     List<ApplicationEntity> findByUserId(Long userId);
+    List<ApplicationEntity> findByPositionUserId(Long companyUserId);
 }

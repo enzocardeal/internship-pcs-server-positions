@@ -1,5 +1,5 @@
-query getAllApplications{
-    getAllApplications {
+query getAllApplicationsByCompany{
+    getAllApplicationsByCompany {
         id
         userId
         position{
