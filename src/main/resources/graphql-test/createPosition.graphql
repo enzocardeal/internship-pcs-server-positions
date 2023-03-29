@@ -7,5 +7,10 @@ mutation createPosition($input: CreatePositionInput!){
         role
         startsAt
         endsAt
+        steps
+        benefits
+        area
+        location
+        scholarship
     }
 }

@@ -8,6 +8,11 @@ type Position {
     role: String!
     startsAt: Date!
     endsAt: Date!
+    steps: [String!]!
+    benefits: String!
+    area: String!
+    location: String!
+    scholarship: String!
 }
 
 input GetPositionByIdInput {
@@ -25,14 +30,24 @@ input CreatePositionInput {
     role: String!
     startsAt: Date!
     endsAt: Date!
+    steps: [String!]!
+    benefits: String!
+    area: String!
+    location: String!
+    scholarship: String!
 }
 
 input UpdatePositionInput {
     id: ID!
     userId: ID!
-    positionName: String!
+    positionName: String
     company: String
     role: String
     startsAt: Date
     endsAt: Date
+    steps: [String]
+    benefits: String
+    area: String
+    location: String
+    scholarship: String
 }

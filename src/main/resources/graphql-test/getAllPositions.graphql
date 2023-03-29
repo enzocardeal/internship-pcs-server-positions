@@ -7,5 +7,10 @@ query getAllPositions {
         role
         startsAt
         endsAt
+        steps
+        benefits
+        area
+        location
+        scholarship
     }
 }

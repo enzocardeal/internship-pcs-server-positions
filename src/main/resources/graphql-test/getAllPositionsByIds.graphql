@@ -7,5 +7,10 @@ query getAllPositionsByIds($input: GetAllPositionsByIdsInput!){
         role
         startsAt
         endsAt
+        steps
+        benefits
+        area
+        location
+        scholarship
     }
 }
