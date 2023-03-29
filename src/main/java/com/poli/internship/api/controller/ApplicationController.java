@@ -24,7 +24,9 @@ public class ApplicationController {
     @Autowired
     public DeleteApplicationUseCase deleteApplicationUseCase;
     @Autowired
-    public GetAllApplicationsUseCase getAllApplicationsUseCase;
+    public GetAllApplicationsByCompanyUseCase getAllApplicationsByCompanyUseCase;
+    @Autowired
+    public GetAllApplicationsByStudentUseCase getAllApplicationsByStudentUseCase;
     @Autowired
     public GetApplicationByIdUseCase getApplicationByIdUseCase;
 
@@ -42,13 +44,23 @@ public class ApplicationController {
     }
 
     @QueryMapping
-    public List<Application> getAllApplications(GraphQLContext ctx) {
+    public List<Application> getAllApplicationsByCompany(GraphQLContext ctx) {
         GraphQLAuthorization.checkAuthorization(ctx);
-        if(UserType.valueOf(ctx.get("userType")) == UserType.STUDENT){
+        if(UserType.valueOf(ctx.get("userType")) != UserType.COMPANY){
             throw new CustomError("User not allowed to check applications.", ErrorType.FORBIDDEN);
         }
 
-        return this.getAllApplicationsUseCase.exec((String) ctx.get("userId"));
+        return this.getAllApplicationsByCompanyUseCase.exec((String) ctx.get("userId"));
+    }
+
+    @QueryMapping
+    public List<Application> getAllApplicationsByStudent(GraphQLContext ctx) {
+        GraphQLAuthorization.checkAuthorization(ctx);
+        if(UserType.valueOf(ctx.get("userType")) != UserType.STUDENT){
+            throw new CustomError("User not allowed to check applications.", ErrorType.FORBIDDEN);
+        }
+
+        return this.getAllApplicationsByStudentUseCase.exec((String) ctx.get("userId"));
     }
 
     @MutationMapping

@@ -1,0 +1,14 @@
+query getAllApplicationsByStudent{
+    getAllApplicationsByStudent {
+        id
+        userId
+        position{
+            id
+            positionName
+            role
+            company
+            startsAt
+            endsAt
+        }
+    }
+}

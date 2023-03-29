@@ -187,72 +187,49 @@ public class ApplicationTest {
     }
 
     @Test
-    public void getAllApplications(){
+    public void getAllApplicationsByCompany(){
         tokenPayload = new AuthTokenPayload(
-                userId,
-                "enzo@teste.com",
+                companyUserId,
+                "rh@btgpactual.com",
                 UserType.COMPANY,
                 3600);
         authToken = this.jwtService.createAuthorizationToken(tokenPayload);
         testerWithAuth = this.tester.mutate().header("Authorization", authToken).build();
 
-        List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
-        positionEntities.add(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
-        positionEntities.add(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
-        positionEntities.add(
-                new PositionEntity(
-                        Long.parseLong(companyUserId),
-                        "Estágio Quadrimestral",
-                        "BTG Pactual",
-                        "Security Office Intern",
-                        LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
-                )
-        );
-        this.positionRepository.saveAll(positionEntities);
+        createApplications();
 
-        List<Application> applications = new ArrayList<Application>();
-        applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(0).getId()), userId)
-        );
-        applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(1).getId()), userId)
-        );
-        applications.add(
-                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(2).getId()), userId)
-        );
-
-        List<HashMap> returnedApplications = this.testerWithAuth.documentName("getAllApplications")
+        List<HashMap> applications = this.testerWithAuth.documentName("getAllApplicationsByCompany")
                 .execute()
-                .path("getAllApplications")
+                .path("getAllApplicationsByCompany")
                  .entity(List.class)
                 .get();
 
-        assertThat(returnedApplications.size()).isEqualTo(3);
-        assertThat(!((HashMap)returnedApplications.get(0).get("position")).isEmpty());
-        assertThat(!((HashMap)returnedApplications.get(1).get("position")).isEmpty());
-        assertThat(!((HashMap)returnedApplications.get(2).get("position")).isEmpty());
-        assertThat((String)returnedApplications.get(0).get("userId")).isEqualTo(userId);
-        assertThat((String)returnedApplications.get(1).get("userId")).isEqualTo(userId);
-        assertThat((String)returnedApplications.get(2).get("userId")).isEqualTo(userId);
+        assertThat(applications.size()).isEqualTo(3);
+        assertThat(!((HashMap)applications.get(0).get("position")).isEmpty());
+        assertThat(!((HashMap)applications.get(1).get("position")).isEmpty());
+        assertThat(!((HashMap)applications.get(2).get("position")).isEmpty());
+        assertThat((String)applications.get(0).get("userId")).isEqualTo(userId);
+        assertThat((String)applications.get(1).get("userId")).isEqualTo(userId);
+        assertThat((String)applications.get(2).get("userId")).isEqualTo(userId);
+    }
+
+    @Test
+    public void getAllApplicationsByStudent(){
+        createApplications();
+
+        List<HashMap> applications = this.testerWithAuth.documentName("getAllApplicationsByStudent")
+                .execute()
+                .path("getAllApplicationsByStudent")
+                .entity(List.class)
+                .get();
+
+        assertThat(applications.size()).isEqualTo(3);
+        assertThat(!((HashMap)applications.get(0).get("position")).isEmpty());
+        assertThat(!((HashMap)applications.get(1).get("position")).isEmpty());
+        assertThat(!((HashMap)applications.get(2).get("position")).isEmpty());
+        assertThat((String)applications.get(0).get("userId")).isEqualTo(userId);
+        assertThat((String)applications.get(1).get("userId")).isEqualTo(userId);
+        assertThat((String)applications.get(2).get("userId")).isEqualTo(userId);
     }
 
     @Test
@@ -317,6 +294,52 @@ public class ApplicationTest {
     private void pubsubServiceDown(){
         subscriber.stopAsync();
         channel.shutdown();
+    }
+
+    private void createApplications(){
+        List<PositionEntity> positionEntities = new ArrayList<PositionEntity>();
+        positionEntities.add(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+        positionEntities.add(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+        positionEntities.add(
+                new PositionEntity(
+                        Long.parseLong(companyUserId),
+                        "Estágio Quadrimestral",
+                        "BTG Pactual",
+                        "Security Office Intern",
+                        LocalDate.of(2023, 5, 1),
+                        LocalDate.of(2023, 8, 30)
+                )
+        );
+        this.positionRepository.saveAll(positionEntities);
+
+        List<Application> applications = new ArrayList<Application>();
+        applications.add(
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(0).getId()), userId)
+        );
+        applications.add(
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(1).getId()), userId)
+        );
+        applications.add(
+                this.applicationDataSource.createApplication(Long.toString(positionEntities.get(2).getId()), userId)
+        );
     }
 }
 
