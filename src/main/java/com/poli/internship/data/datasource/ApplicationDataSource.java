@@ -89,8 +89,13 @@ public class ApplicationDataSource {
         return ApplicationMapper.INSTANCE.aplicationEntityToModel(applicationEntity);
     }
 
-    public List<Application> getAllApplicationsByUserId(String userId){
-        List<ApplicationEntity> applicationEntities = applicationRepository.findByUserId(Long.parseLong(userId));
+    public List<Application> getAllApplicationsByCompany(String companyUserId){
+        List<ApplicationEntity> applicationEntities = applicationRepository.findByPositionUserId(Long.parseLong(companyUserId));
+        return ApplicationMapper.INSTANCE.applicationEntitiesToModels(applicationEntities);
+    }
+
+    public List<Application> getAllApplicationsByStudent(String studentUserId){
+        List<ApplicationEntity> applicationEntities = applicationRepository.findByUserId(Long.parseLong(studentUserId));
         return ApplicationMapper.INSTANCE.applicationEntitiesToModels(applicationEntities);
     }
 }

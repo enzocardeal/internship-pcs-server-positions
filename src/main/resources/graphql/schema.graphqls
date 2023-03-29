@@ -4,7 +4,8 @@ type Query {
     getAllPositionsByIds(input: GetAllPositionsByIdsInput!): [Position]
 
     getApplicationById(input: GetApplicationById!): Application
-    getAllApplications: [Application]
+    getAllApplicationsByCompany: [Application]
+    getAllApplicationsByStudent: [Application]
 }
 
 type Mutation {
