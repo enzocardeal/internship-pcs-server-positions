@@ -26,12 +26,10 @@ import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureH
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.poli.internship.InternshipApplication.LOGGER;
@@ -97,8 +95,15 @@ public class ApplicationTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
+                        LocalDate.of(2023, 8, 30),
+                        Arrays.asList("1", "2", "3"),
+                        "VA",
+                        240000,
+                        "IT",
+                        "Sao Paulo",
+                        "Computacao"
                 )
         );
 
@@ -142,6 +147,7 @@ public class ApplicationTest {
     }
 
     @Test
+    @Transactional
     public void deleteApplication() throws JsonProcessingException {
         pubsubServiceUp();
         PositionEntity positionEntity = createElementOnDb();
@@ -187,6 +193,7 @@ public class ApplicationTest {
     }
 
     @Test
+    @Transactional
     public void getAllApplicationsByCompany(){
         tokenPayload = new AuthTokenPayload(
                 companyUserId,
@@ -214,6 +221,7 @@ public class ApplicationTest {
     }
 
     @Test
+    @Transactional
     public void getAllApplicationsByStudent(){
         createApplications();
 
@@ -233,6 +241,7 @@ public class ApplicationTest {
     }
 
     @Test
+    @Transactional
     public void getApplicationById(){
         PositionEntity positionEntity = createElementOnDb();
         String id = positionEntity.getId().toString();
@@ -258,8 +267,15 @@ public class ApplicationTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
+                        LocalDate.of(2023, 8, 30),
+                        Arrays.asList("1", "2", "3"),
+                        "VA",
+                        240000,
+                        "IT",
+                        "Sao Paulo",
+                        "Computacao"
                 )
         );
 
@@ -304,8 +320,15 @@ public class ApplicationTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
+                        LocalDate.of(2023, 8, 30),
+                        Arrays.asList("1", "2", "3"),
+                        "VA",
+                        240000,
+                        "IT",
+                        "Sao Paulo",
+                        "Computacao"
                 )
         );
         positionEntities.add(
@@ -314,8 +337,15 @@ public class ApplicationTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
+                        LocalDate.of(2023, 8, 30),
+                        Arrays.asList("1", "2", "3"),
+                        "VA",
+                        240000,
+                        "IT",
+                        "Sao Paulo",
+                        "Computacao"
                 )
         );
         positionEntities.add(
@@ -324,8 +354,15 @@ public class ApplicationTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
-                        LocalDate.of(2023, 8, 30)
+                        LocalDate.of(2023, 8, 30),
+                        Arrays.asList("1", "2", "3"),
+                        "VA",
+                        240000,
+                        "IT",
+                        "Sao Paulo",
+                        "Computacao"
                 )
         );
         this.positionRepository.saveAll(positionEntities);
