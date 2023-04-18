@@ -5,10 +5,12 @@ query getPositionById($input: GetPositionByIdInput!) {
         company
         positionName
         role
+        description
         startsAt
         endsAt
         steps
         benefits
+        compensation
         area
         location
         scholarship

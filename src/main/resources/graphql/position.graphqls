@@ -6,10 +6,12 @@ type Position {
     positionName: String!
     company: String!
     role: String!
+    description: String,
     startsAt: Date!
     endsAt: Date!
     steps: [String!]!
     benefits: String!
+    compensation: Int!
     area: String!
     location: String!
     scholarship: String!
@@ -28,10 +30,12 @@ input CreatePositionInput {
     positionName: String!
     company: String!
     role: String!
+    description: String!
     startsAt: Date!
     endsAt: Date!
     steps: [String!]!
     benefits: String!
+    compensation: String!
     area: String!
     location: String!
     scholarship: String!
@@ -43,10 +47,12 @@ input UpdatePositionInput {
     positionName: String
     company: String
     role: String
+    description: String
     startsAt: Date
     endsAt: Date
     steps: [String]
     benefits: String
+    compensation: String
     area: String
     location: String
     scholarship: String

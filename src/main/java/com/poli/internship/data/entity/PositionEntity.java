@@ -15,12 +15,14 @@ public class PositionEntity {
     private String positionName;
     private String company;
     private String role;
+    private String description;
     private LocalDate startsAt;
     private LocalDate endsAt;
     @ElementCollection
     @CollectionTable(name="steps")
     private List<String> steps;
     private String benefits;
+    private Integer compensation;
     private String area;
     private String location;
     private String scholarship;
@@ -32,10 +34,12 @@ public class PositionEntity {
             String positionName,
             String company,
             String role,
+            String description,
             LocalDate startsAt,
             LocalDate endsAt,
             List<String> steps,
             String benefits,
+            Integer compensation,
             String area,
             String location,
             String scholarship
@@ -44,10 +48,12 @@ public class PositionEntity {
         this.positionName = positionName;
         this.company = company;
         this.role = role;
+        this.description = description;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
         this.steps = steps;
         this.benefits = benefits;
+        this.compensation = compensation;
         this.area = area;
         this.location = location;
         this.scholarship = scholarship;
@@ -59,10 +65,12 @@ public class PositionEntity {
             String positionName,
             String company,
             String role,
+            String description,
             LocalDate startsAt,
             LocalDate endsAt,
             List<String> steps,
             String benefits,
+            Integer compensation,
             String area,
             String location,
             String scholarship
@@ -72,33 +80,17 @@ public class PositionEntity {
         this.positionName = positionName;
         this.company = company;
         this.role = role;
+        this.description = description;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
         this.steps = steps;
         this.benefits = benefits;
+        this.compensation = compensation;
         this.area = area;
         this.location = location;
         this.scholarship = scholarship;
     }
 
-//    public PositionEntity(Long userId, String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt) {
-//        this.userId = userId;
-//        this.positionName = positionName;
-//        this.company = company;
-//        this.role = role;
-//        this.startsAt = startsAt;
-//        this.endsAt = endsAt;
-//    }
-//
-//    public PositionEntity(Long id, Long userId, String positionName, String company, String role, LocalDate startsAt, LocalDate endsAt) {
-//        this.id = id;
-//        this.userId = userId;
-//        this.positionName = positionName;
-//        this.company = company;
-//        this.role = role;
-//        this.startsAt = startsAt;
-//        this.endsAt = endsAt;
-//    }
 
     public Long getId() {
         return id;
@@ -120,6 +112,10 @@ public class PositionEntity {
         return role;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public LocalDate getStartsAt() {
         return startsAt;
     }
@@ -134,6 +130,10 @@ public class PositionEntity {
 
     public String getBenefits() {
         return benefits;
+    }
+
+    public Integer getCompensation() {
+        return compensation;
     }
 
     public String getArea() {

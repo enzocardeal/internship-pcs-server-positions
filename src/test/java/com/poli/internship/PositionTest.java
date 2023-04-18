@@ -58,10 +58,12 @@ public class PositionTest {
         input.put("company", "BTG Pactual");
         input.put("positionName", "Estágio Quadrimestral");
         input.put("role", "Security Office Intern");
+        input.put("description", "");
         input.put("startsAt", LocalDate.of(2023, 5, 1));
         input.put("endsAt", LocalDate.of(2023, 8, 30));
         input.put("steps", Arrays.asList("1", "2", "3"));
         input.put("benefits", "VA");
+        input.put("compensation", "240000");
         input.put("area", "IT");
         input.put("location", "Sao Paulo");
         input.put("scholarship", "Computacao");
@@ -78,7 +80,7 @@ public class PositionTest {
         assertThat(position.id()).isNotNull();
         assertThat(position.userId()).isEqualTo(companyUserId);
         assertThat(position.company()).isEqualTo(input.get("company"));
-        assertThat(position).hasOnlyFields("id", "userId", "company", "positionName", "role", "startsAt", "endsAt", "steps", "benefits", "area", "location", "scholarship");
+        assertThat(position).hasOnlyFields("id", "userId", "company", "positionName", "role", "description", "startsAt", "endsAt", "steps", "benefits","compensation" , "area", "location", "scholarship");
         assertThat(positionEntity.getId()).isEqualTo(Long.parseLong(position.id()));
         assertThat(positionEntity.getPositionName()).isEqualTo(input.get("positionName"));
     }
@@ -101,7 +103,7 @@ public class PositionTest {
         assertThat(position.id()).isEqualTo(id);
         assertThat(position.userId()).isEqualTo(companyUserId);
         assertThat(position.positionName()).isEqualTo(positionEntity.getPositionName());
-        assertThat(position).hasOnlyFields("id", "userId", "company", "positionName", "role", "startsAt", "endsAt", "steps", "benefits", "area", "location", "scholarship");
+        assertThat(position).hasOnlyFields("id", "userId", "company", "positionName", "role", "description", "startsAt", "endsAt", "steps", "benefits","compensation" , "area", "location", "scholarship");
     }
 
     @Test
@@ -220,10 +222,12 @@ public class PositionTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
                         LocalDate.of(2023, 8, 30),
                         Arrays.asList("1", "2", "3"),
                         "VA",
+                        240000,
                         "IT",
                         "Sao Paulo",
                         "Computacao"
@@ -241,10 +245,12 @@ public class PositionTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
                         LocalDate.of(2023, 8, 30),
                         Arrays.asList("1", "2", "3"),
                         "VA",
+                        240000,
                         "IT",
                         "Sao Paulo",
                         "Computacao"
@@ -256,10 +262,12 @@ public class PositionTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
                         LocalDate.of(2023, 8, 30),
                         Arrays.asList("1", "2", "3"),
                         "VA",
+                        240000,
                         "IT",
                         "Sao Paulo",
                         "Computacao"
@@ -271,10 +279,12 @@ public class PositionTest {
                         "Estágio Quadrimestral",
                         "BTG Pactual",
                         "Security Office Intern",
+                        "",
                         LocalDate.of(2023, 5, 1),
                         LocalDate.of(2023, 8, 30),
                         Arrays.asList("1", "2", "3"),
                         "VA",
+                        240000,
                         "IT",
                         "Sao Paulo",
                         "Computacao"

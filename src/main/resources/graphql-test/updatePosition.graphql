@@ -5,10 +5,12 @@ mutation updatePosition($input: UpdatePositionInput!){
         positionName
         company
         role
+        description
         startsAt
         endsAt
         steps
         benefits
+        compensation
         area
         location
         scholarship

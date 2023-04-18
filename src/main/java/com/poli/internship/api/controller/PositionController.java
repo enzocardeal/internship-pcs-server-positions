@@ -68,10 +68,12 @@ public class PositionController {
                         (String)data.get("positionName"),
                         (String)data.get("company"),
                         (String)data.get("role"),
+                        (String)data.get("description"),
                         (LocalDate)data.get("startsAt"),
                         (LocalDate)data.get("endsAt"),
                         (List<String>)data.get("steps"),
                         (String)data.get("benefits"),
+                        (String)data.get("compensation"),
                         (String)data.get("area"),
                         (String)data.get("location"),
                         (String)data.get("scholarship")
