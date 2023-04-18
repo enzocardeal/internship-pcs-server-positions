@@ -5,7 +5,14 @@ query getAllPositionsByIds($input: GetAllPositionsByIdsInput!){
         positionName
         company
         role
+        description
         startsAt
         endsAt
+        steps
+        benefits
+        compensation
+        area
+        location
+        scholarship
     }
 }

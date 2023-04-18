@@ -5,7 +5,14 @@ mutation createPosition($input: CreatePositionInput!){
         positionName
         company
         role
+        description
         startsAt
         endsAt
+        steps
+        benefits
+        compensation
+        area
+        location
+        scholarship
     }
 }
