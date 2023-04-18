@@ -68,39 +68,51 @@ public class PositionController {
                         (String)data.get("positionName"),
                         (String)data.get("company"),
                         (String)data.get("role"),
+                        (String)data.get("description"),
                         (LocalDate)data.get("startsAt"),
-                        (LocalDate)data.get("endsAt"))
+                        (LocalDate)data.get("endsAt"),
+                        (List<String>)data.get("steps"),
+                        (String)data.get("benefits"),
+                        (String)data.get("compensation"),
+                        (String)data.get("area"),
+                        (String)data.get("location"),
+                        (String)data.get("scholarship")
+                )
+
         );
     }
 
-    @MutationMapping
-    public Position updatePosition(@Argument Map input, GraphQLContext ctx){
-        GraphQLAuthorization.checkAuthorization(ctx);
-        if(UserType.valueOf(ctx.get("userType")) != UserType.COMPANY) {
-            throw new CustomError("Wrong user type.", ErrorType.FORBIDDEN);
-        }
-
-        Map data = (Map)input.get("input");
-        String id = (String)data.get("id");
-
-        Position positionToBeUpdated = this.getPositionByIdUseCase.exec((String)data.get("id"));
-        if(!positionToBeUpdated.userId().equals((String)ctx.get("userId"))){
-            throw new CustomError("This position wasn't created by the current user.", ErrorType.FORBIDDEN);
-        }
-
-
-        return this.updatePositionUseCase.exec(
-                new PositionInput(
-                        (String) ctx.get("userId"),
-                        data.get("positionName") != null ? (String)data.get("positionName") : positionToBeUpdated.positionName(),
-                        data.get("company") != null ? (String)data.get("company") : positionToBeUpdated.company(),
-                        data.get("role") != null ? (String)data.get("role") : positionToBeUpdated.role(),
-                        data.get("startsAt") != null ? (LocalDate)data.get("startsAt") : positionToBeUpdated.startsAt(),
-                        data.get("endsAt") != null ? (LocalDate)data.get("endsAt") : positionToBeUpdated.endsAt()
-                ),
-                id
-        );
-    }
+//    @MutationMapping
+//    public Position updatePosition(@Argument Map input, GraphQLContext ctx){
+//        GraphQLAuthorization.checkAuthorization(ctx);
+//        if(UserType.valueOf(ctx.get("userType")) != UserType.COMPANY) {
+//            throw new CustomError("Wrong user type.", ErrorType.FORBIDDEN);
+//        }
+//
+//        Map data = (Map)input.get("input");
+//        String id = (String)data.get("id");
+//
+//        Position positionToBeUpdated = this.getPositionByIdUseCase.exec((String)data.get("id"));
+//        if(!positionToBeUpdated.userId().equals((String)ctx.get("userId"))){
+//            throw new CustomError("This position wasn't created by the current user.", ErrorType.FORBIDDEN);
+//        }
+//        return this.updatePositionUseCase.exec(
+//                new PositionInput(
+//                        (String) ctx.get("userId"),
+//                        data.get("positionName") != null ? (String)data.get("positionName") : positionToBeUpdated.positionName(),
+//                        data.get("company") != null ? (String)data.get("company") : positionToBeUpdated.company(),
+//                        data.get("role") != null ? (String)data.get("role") : positionToBeUpdated.role(),
+//                        data.get("startsAt") != null ? (LocalDate)data.get("startsAt") : positionToBeUpdated.startsAt(),
+//                        data.get("endsAt") != null ? (LocalDate)data.get("endsAt") : positionToBeUpdated.endsAt(),
+//                        data.get("steps") != null ? (List<String>)data.get("steps") : positionToBeUpdated.steps(),
+//                        data.get("benefits") != null ? (String)data.get("benefits") : positionToBeUpdated.benefits(),
+//                        data.get("area") != null ? (String)data.get("area") : positionToBeUpdated.area(),
+//                        data.get("location") != null ? (String)data.get("location") : positionToBeUpdated.location(),
+//                        data.get("scholarship") != null ? (String)data.get("scholarship") : positionToBeUpdated.scholarship()
+//                ),
+//                id
+//        );
+//    }
 
     @MutationMapping
     public Boolean deletePosition(@Argument Map input, GraphQLContext ctx){

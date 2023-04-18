@@ -52,7 +52,15 @@ public class PositionDataSource {
                         positionInput.positionName(),
                         positionInput.company(),
                         positionInput.role(),
-                        positionInput.startsAt(),positionInput.endsAt()
+                        positionInput.description(),
+                        positionInput.startsAt(),
+                        positionInput.endsAt(),
+                        positionInput.steps(),
+                        positionInput.benefits(),
+                        Integer.valueOf(positionInput.compensation()),
+                        positionInput.area(),
+                        positionInput.location(),
+                        positionInput.scholarship()
                 )
         );
         return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);
@@ -66,7 +74,15 @@ public class PositionDataSource {
                         positionInput.positionName(),
                         positionInput.company(),
                         positionInput.role(),
-                        positionInput.startsAt(),positionInput.endsAt()
+                        positionInput.description(),
+                        positionInput.startsAt(),
+                        positionInput.endsAt(),
+                        positionInput.steps(),
+                        positionInput.benefits(),
+                        Integer.valueOf(positionInput.compensation()),
+                        positionInput.area(),
+                        positionInput.location(),
+                        positionInput.scholarship()
                 )
         );
         return PositionMapper.INSTANCE.positionEntityToModel(positionEntity);
